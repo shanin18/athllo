@@ -2,24 +2,68 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, TrendingUp, Inbox, Handshake } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { formatMoney, formatReach } from "@/lib/utils";
 
 export const metadata = { title: "Athlete dashboard" };
 
-export default function AthleteDashboard() {
+export default async function AthleteDashboard() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: profile } = await supabase
+    .from("athlete_profiles")
+    .select("id, display_name, total_reach, verification_status")
+    .eq("user_id", user!.id)
+    .maybeSingle();
+
+  const [{ count: inquiryCount }, { data: deals }, { data: inquiries }] = await Promise.all([
+    supabase
+      .from("inquiries")
+      .select("id", { count: "exact", head: true })
+      .eq("recipient_id", user!.id)
+      .eq("status", "new"),
+    supabase
+      .from("deals")
+      .select("amount")
+      .eq("athlete_id", profile?.id ?? "")
+      .eq("status", "active"),
+    supabase
+      .from("inquiries")
+      .select("subject, created_at, users:sender_id(email)")
+      .eq("recipient_id", user!.id)
+      .order("created_at", { ascending: false })
+      .limit(3),
+  ]);
+
+  const activeDealsTotal = (deals ?? []).reduce((sum, d: any) => sum + Number(d.amount ?? 0), 0);
+
   const stats = [
-    { label: "Profile views", value: "1,284", delta: "+12%", icon: TrendingUp },
-    { label: "Open inquiries", value: "7", delta: "+3", icon: Inbox },
-    { label: "Active deals", value: "2", delta: "$15K", icon: Handshake },
+    { label: "Profile views", value: formatReach(profile?.total_reach ?? 0), delta: "reach", icon: TrendingUp },
+    { label: "Open inquiries", value: String(inquiryCount ?? 0), delta: "new", icon: Inbox },
+    {
+      label: "Active deals",
+      value: String((deals ?? []).length),
+      delta: formatMoney(activeDealsTotal * 100),
+      icon: Handshake,
+    },
   ];
+
   return (
     <div className="px-6 py-8 md:px-10">
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-display text-2xl font-extrabold">Overview</h1>
-            <Badge className="border-brand/20 bg-brand-wash text-brand">
-              <BadgeCheck className="h-3 w-3" /> Verified
-            </Badge>
+            <h1 className="font-display text-2xl font-extrabold">
+              {profile?.display_name ?? "Overview"}
+            </h1>
+            {profile?.verification_status === "verified" && (
+              <Badge className="border-brand/20 bg-brand-wash text-brand">
+                <BadgeCheck className="h-3 w-3" /> Verified
+              </Badge>
+            )}
           </div>
           <p className="mt-1 text-sm text-muted">Here's how your profile is performing.</p>
         </div>
@@ -45,17 +89,18 @@ export default function AthleteDashboard() {
         <Card className="p-6" id="inquiries">
           <h2 className="font-display text-lg font-bold">Recent inquiries</h2>
           <div className="mt-4 divide-y divide-line">
-            {[
-              ["Northwind Apparel", "Spring campaign — 3 posts", "2h ago"],
-              ["Volt Energy", "Event appearance", "1d ago"],
-              ["Peak Nutrition", "Ambassador program", "3d ago"],
-            ].map(([brand, subject, time]) => (
-              <div key={brand} className="flex items-center justify-between py-3.5">
+            {(inquiries ?? []).length === 0 && (
+              <p className="py-3.5 text-sm text-muted">No inquiries yet.</p>
+            )}
+            {(inquiries ?? []).map((i: any, idx: number) => (
+              <div key={idx} className="flex items-center justify-between py-3.5">
                 <div>
-                  <div className="text-sm font-semibold">{brand}</div>
-                  <div className="text-sm text-muted">{subject}</div>
+                  <div className="text-sm font-semibold">{i.users?.email ?? "Unknown"}</div>
+                  <div className="text-sm text-muted">{i.subject}</div>
                 </div>
-                <span className="font-mono text-xs text-muted">{time}</span>
+                <span className="font-mono text-xs text-muted">
+                  {new Date(i.created_at).toLocaleDateString()}
+                </span>
               </div>
             ))}
           </div>

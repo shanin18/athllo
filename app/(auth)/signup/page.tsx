@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { signUpSchema } from "@/lib/validation/schemas";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,17 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 export default function SignUpPage() {
+  return (
+    <Suspense>
+      <SignUpForm />
+    </Suspense>
+  );
+}
+
+function SignUpForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next");
   const [role, setRole] = useState<"athlete" | "sponsor">("athlete");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,7 +53,7 @@ export default function SignUpPage() {
       setError(error.message);
       return;
     }
-    router.push(`/${role}`);
+    router.push(next && next.startsWith("/") ? next : `/${role}`);
   }
 
   return (

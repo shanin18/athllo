@@ -5,21 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, SlidersHorizontal } from "lucide-react";
+import { getAthletes } from "@/lib/data/athletes";
 
 export const metadata = { title: "Discover athletes" };
-
-const ATHLETES = [
-  { slug: "sana-ito", name: "Sana Ito", sport: "Surfing", reach: "3.2M", loc: "Lisbon, PT", rate: "$12K", verified: true },
-  { slug: "maya-okonkwo", name: "Maya Okonkwo", sport: "Track & Field", reach: "2.4M", loc: "London, UK", rate: "$8K", verified: true },
-  { slug: "tariq-bello", name: "Tariq Bello", sport: "Basketball", reach: "1.9M", loc: "Lagos, NG", rate: "$7K", verified: true },
-  { slug: "aisha-karim", name: "Aisha Karim", sport: "Climbing", reach: "1.1M", loc: "Dubai, AE", rate: "$5K", verified: false },
-  { slug: "diego-ramos", name: "Diego Ramos", sport: "Football", reach: "890K", loc: "Madrid, ES", rate: "$4K", verified: true },
-  { slug: "leo-andersen", name: "Leo Andersen", sport: "Cycling", reach: "640K", loc: "Oslo, NO", rate: "$3K", verified: false },
-];
+export const revalidate = 60;
 
 const SPORTS = ["All sports", "Surfing", "Track & Field", "Basketball", "Climbing", "Football", "Cycling"];
 
-export default function SearchPage() {
+export default async function SearchPage() {
+  const ATHLETES = await getAthletes();
   return (
     <>
       <SiteNav />
@@ -56,6 +50,10 @@ export default function SearchPage() {
             <option>Sort: Recently active</option>
           </select>
         </div>
+
+        {ATHLETES.length === 0 && (
+          <p className="mt-16 text-center text-sm text-muted">No athletes found yet.</p>
+        )}
 
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {ATHLETES.map((a) => (

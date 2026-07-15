@@ -1,14 +1,21 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LayoutGrid, User, Inbox, Handshake, Wallet, Search } from "lucide-react";
+import { LayoutGrid, User, Inbox, Handshake, Wallet, Search, Megaphone } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
-const NAV = [
+const ATHLETE_NAV = [
   { href: "/athlete", label: "Overview", icon: LayoutGrid },
   { href: "/athlete#profile", label: "My profile", icon: User },
   { href: "/athlete#inquiries", label: "Inquiries", icon: Inbox },
   { href: "/athlete#deals", label: "Deals", icon: Handshake },
   { href: "/athlete#payouts", label: "Payouts", icon: Wallet },
+  { href: "/search", label: "Discover", icon: Search },
+];
+
+const SPONSOR_NAV = [
+  { href: "/sponsor", label: "Overview", icon: LayoutGrid },
+  { href: "/sponsor#opportunities", label: "Opportunities", icon: Megaphone },
+  { href: "/sponsor#deals", label: "Deals", icon: Handshake },
   { href: "/search", label: "Discover", icon: Search },
 ];
 
@@ -23,6 +30,13 @@ export default async function DashboardLayout({
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+
+  const { data: profile } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+  const NAV = profile?.role === "sponsor" ? SPONSOR_NAV : ATHLETE_NAV;
 
   return (
     <div className="grid min-h-dvh grid-cols-1 md:grid-cols-[240px_1fr]">

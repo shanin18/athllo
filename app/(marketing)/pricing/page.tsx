@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CheckoutButton } from "@/components/marketing/checkout-button";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "Pricing" };
 
 const tiers = [
   {
     name: "Free",
+    tier: "free" as const,
     price: "$0",
     tag: "Get discovered",
     features: ["Public profile", "Up to 5 inquiries / mo", "Basic search visibility", "Standard payouts"],
@@ -16,6 +18,7 @@ const tiers = [
   },
   {
     name: "Pro",
+    tier: "pro" as const,
     price: "$29",
     tag: "For serious talent",
     features: ["Everything in Free", "Unlimited inquiries", "Priority search ranking", "Verified badge", "Deal analytics"],
@@ -24,6 +27,7 @@ const tiers = [
   },
   {
     name: "Elite",
+    tier: "elite" as const,
     price: "$99",
     tag: "For brands & agencies",
     features: ["Everything in Pro", "Featured placement", "Post unlimited opportunities", "Team seats", "Dedicated support"],
@@ -32,7 +36,12 @@ const tiers = [
   },
 ];
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <div className="container-x py-20 md:py-28">
       <div className="mx-auto max-w-2xl text-center">
@@ -69,11 +78,17 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
-            <Link href="/signup" className="mt-8 block">
-              <Button variant={t.highlight ? "primary" : "outline"} className="w-full">
+            {t.tier === "free" ? (
+              <Link href="/signup" className="mt-8 block">
+                <span className="flex h-11 w-full items-center justify-center rounded-full border border-line bg-surface text-[15px] font-medium text-ink transition-colors hover:bg-brand-wash">
+                  {t.cta}
+                </span>
+              </Link>
+            ) : (
+              <CheckoutButton tier={t.tier} isSignedIn={!!user} highlight={t.highlight}>
                 {t.cta}
-              </Button>
-            </Link>
+              </CheckoutButton>
+            )}
           </Card>
         ))}
       </div>

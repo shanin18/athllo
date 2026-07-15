@@ -112,18 +112,26 @@ async function main() {
 
   for (const a of ATHLETES) {
     let userId;
-    const { data: created, error: createError } = await admin.auth.admin.createUser({
-      email: a.email,
-      password: "demo1234",
-      email_confirm: true,
-      user_metadata: { role: "athlete" },
-    });
+    let created, createError;
+    for (let attempt = 0; attempt < 4; attempt++) {
+      ({ data: created, error: createError } = await admin.auth.admin.createUser({
+        email: a.email,
+        password: "demo1234",
+        email_confirm: true,
+        user_metadata: { role: "athlete" },
+      }));
+      if (!createError || !createError.message.includes("fetch failed")) break;
+      await new Promise((r) => setTimeout(r, 1000));
+    }
 
     if (createError) {
-      const { data: list } = await admin.auth.admin.listUsers();
-      const existing = list?.users.find((u) => u.email === a.email);
-      if (!existing) {
-        console.error(`FAILED ${a.email}:`, createError.message);
+      const { data: existing, error: lookupError } = await admin
+        .from("users")
+        .select("id")
+        .eq("email", a.email)
+        .maybeSingle();
+      if (lookupError || !existing) {
+        console.error(`FAILED ${a.email}:`, createError.message, lookupError?.message ?? "");
         continue;
       }
       userId = existing.id;
@@ -131,24 +139,29 @@ async function main() {
       userId = created.user.id;
     }
 
-    const { error: upsertError } = await admin
-      .from("athlete_profiles")
-      .update({
-        slug: a.slug,
-        display_name: a.display_name,
-        headline: a.headline,
-        bio: a.bio,
-        location: a.location,
-        sport_id: sportBySlug[a.sportSlug] ?? null,
-        career_stage: a.career_stage,
-        campaign_rate: a.campaign_rate,
-        total_reach: a.total_reach,
-        social_stats: a.social_stats,
-        achievements: a.achievements,
-        verification_status: a.verification_status,
-        is_featured: a.is_featured,
-      })
-      .eq("user_id", userId);
+    let upsertError;
+    for (let attempt = 0; attempt < 4; attempt++) {
+      ({ error: upsertError } = await admin
+        .from("athlete_profiles")
+        .update({
+          slug: a.slug,
+          display_name: a.display_name,
+          headline: a.headline,
+          bio: a.bio,
+          location: a.location,
+          sport_id: sportBySlug[a.sportSlug] ?? null,
+          career_stage: a.career_stage,
+          campaign_rate: a.campaign_rate,
+          total_reach: a.total_reach,
+          social_stats: a.social_stats,
+          achievements: a.achievements,
+          verification_status: a.verification_status,
+          is_featured: a.is_featured,
+        })
+        .eq("user_id", userId));
+      if (!upsertError || !upsertError.message.includes("fetch failed")) break;
+      await new Promise((r) => setTimeout(r, 1000));
+    }
 
     if (upsertError) {
       console.error(`PROFILE UPDATE FAILED ${a.email}:`, upsertError.message);

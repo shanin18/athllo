@@ -4,39 +4,21 @@ import { SiteNav } from "@/components/marketing/site-nav";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { BadgeCheck, MapPin, Instagram, Youtube } from "lucide-react";
+import { getAthleteBySlug } from "@/lib/data/athletes";
+import { createClient } from "@/lib/supabase/server";
+import { AthleteCta } from "@/components/marketing/athlete-cta";
 
-// Demo data — in production this is fetched from Supabase by slug (ISR).
-const DB: Record<string, any> = {
-  "sana-ito": {
-    name: "Sana Ito",
-    sport: "Surfing",
-    loc: "Lisbon, Portugal",
-    headline: "3x national champion. Ocean advocate.",
-    bio: "Professional surfer competing on the world tour, with a community built around sustainable ocean sports and coastal conservation.",
-    reach: "3.2M",
-    rate: "$12,000",
-    verified: true,
-    stats: [["Instagram", "1.8M"], ["TikTok", "980K"], ["YouTube", "420K"]],
-    achievements: ["3x National Champion", "WSL Tour competitor", "2M+ engaged community"],
-  },
-  "maya-okonkwo": {
-    name: "Maya Okonkwo",
-    sport: "Track & Field",
-    loc: "London, UK",
-    headline: "Sprinter. Two-time European medalist.",
-    bio: "400m specialist and mentor to young athletes, partnering with brands that back the next generation of track talent.",
-    reach: "2.4M",
-    rate: "$8,000",
-    verified: true,
-    stats: [["Instagram", "1.4M"], ["TikTok", "760K"], ["YouTube", "240K"]],
-    achievements: ["2x European medalist", "National record holder", "Youth mentor program"],
-  },
-};
+export const revalidate = 60;
 
-export function generateStaticParams() {
-  return Object.keys(DB).map((slug) => ({ slug }));
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const a = await getAthleteBySlug(slug);
+  return { title: a ? a.name : "Athlete not found" };
 }
 
 export default async function AthleteProfile({
@@ -45,8 +27,13 @@ export default async function AthleteProfile({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const a = DB[slug];
+  const a = await getAthleteBySlug(slug);
   if (!a) notFound();
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -125,14 +112,7 @@ export default async function AthleteProfile({
                 <span className="stat-num text-2xl font-bold">{a.rate}</span>
               </div>
               <p className="mt-1 text-xs text-muted">per campaign · negotiable</p>
-              <Link href="/signup" className="mt-5 block">
-                <Button className="w-full">Send an inquiry</Button>
-              </Link>
-              <Link href="/signup" className="mt-2 block">
-                <Button variant="outline" className="w-full">
-                  Save to shortlist
-                </Button>
-              </Link>
+              <AthleteCta recipientId={a.userId} athleteName={a.name} isSignedIn={!!user} />
               <p className="mt-4 text-center text-xs text-muted">
                 Payments handled securely via Stripe
               </p>
