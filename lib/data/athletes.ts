@@ -44,6 +44,18 @@ export async function getAthletes(): Promise<AthleteCard[]> {
   return data.map(toCard);
 }
 
+export async function getFeaturedAthletes(limit = 3): Promise<AthleteCard[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("athlete_profiles")
+    .select(CARD_SELECT)
+    .eq("is_featured", true)
+    .order("total_reach", { ascending: false })
+    .limit(limit);
+  if (error || !data) return [];
+  return data.map(toCard);
+}
+
 export async function getAthleteBySlug(slug: string): Promise<AthleteDetail | null> {
   const supabase = await createClient();
   const { data, error } = await supabase

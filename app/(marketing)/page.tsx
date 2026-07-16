@@ -1,26 +1,32 @@
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Search, Wallet, Zap } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, BadgeCheck, Search, Wallet, Zap, ShieldCheck, LineChart, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Avatar } from "@/components/ui/avatar";
 import { StatTicker } from "@/components/marketing/stat-ticker";
+import { getFeaturedAthletes } from "@/lib/data/athletes";
+import { sportImageUrl } from "@/lib/sport-images";
 
-const FEATURED = [
-  { name: "Sana Ito", sport: "Surfing", reach: "3.2M", loc: "Lisbon, PT", rate: "$12K", verified: true },
-  { name: "Maya Okonkwo", sport: "Track & Field", reach: "2.4M", loc: "London, UK", rate: "$8K", verified: true },
-  { name: "Tariq Bello", sport: "Basketball", reach: "1.9M", loc: "Lagos, NG", rate: "$7K", verified: true },
-];
+const SPORTS = ["Surfing", "Track & Field", "Basketball", "Climbing", "Football", "Cycling"];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const FEATURED = await getFeaturedAthletes(3);
+
   return (
     <>
-      {/* HERO — the one bold, dark moment */}
+      {/* HERO */}
       <section className="relative overflow-hidden bg-ink text-white">
-        <div
-          aria-hidden
-          className="absolute -right-40 -top-40 h-[520px] w-[520px] rounded-full opacity-30 blur-3xl"
-          style={{ background: "radial-gradient(circle, #1b39ff 0%, transparent 70%)" }}
+        <Image
+          src={sportImageUrl("Track & Field", 1800)}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover opacity-25"
         />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/85 to-ink" />
         <div className="container-x relative grid gap-14 pb-16 pt-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:pb-24 lg:pt-28">
           <div className="animate-fade-up">
             <span className="eyebrow text-white/50">Sports sponsorship, measured</span>
@@ -136,57 +142,142 @@ export default function HomePage() {
       </section>
 
       {/* FEATURED ATHLETES */}
+      {FEATURED.length > 0 && (
+        <section className="border-y border-line bg-surface py-20 md:py-28">
+          <div className="container-x">
+            <div className="flex items-end justify-between">
+              <div>
+                <span className="eyebrow">Featured talent</span>
+                <h2 className="display mt-4 text-4xl md:text-5xl">On the rise this week</h2>
+              </div>
+              <Link href="/search" className="hidden md:block">
+                <Button variant="outline">
+                  See all <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {FEATURED.map((a) => (
+                <Link key={a.slug} href={`/athletes/${a.slug}`}>
+                  <Card className="overflow-hidden transition-shadow hover:shadow-lift">
+                    <div className="relative h-44">
+                      <Image
+                        src={sportImageUrl(a.sport)}
+                        alt={a.sport}
+                        fill
+                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" />
+                      <span className="absolute left-4 top-4 font-mono text-[11px] uppercase tracking-widest text-white/70">
+                        {a.sport}
+                      </span>
+                      <div className="absolute bottom-4 left-4">
+                        <div className="stat-num text-3xl font-bold text-white">{a.reach}</div>
+                        <div className="font-mono text-[10px] uppercase tracking-widest text-white/60">
+                          total reach
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-5">
+                      <div className="flex items-center gap-2.5">
+                        <Avatar seed={a.slug} size={28} className="-mt-8 border-2 border-surface" />
+                        <h3 className="font-display text-lg font-bold">{a.name}</h3>
+                        {a.verified && <BadgeCheck className="h-4 w-4 text-brand" />}
+                      </div>
+                      <p className="text-sm text-muted">{a.loc}</p>
+                      <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
+                        <span className="stat-num text-sm font-bold">{a.rate}<span className="font-sans font-normal text-muted"> /campaign</span></span>
+                        <span className="text-sm font-medium text-brand">View →</span>
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* SPORTS WE COVER */}
+      <section className="container-x py-20 md:py-28">
+        <span className="eyebrow">Every sport, one marketplace</span>
+        <h2 className="display mt-4 max-w-xl text-4xl md:text-5xl">
+          From the surf to the track, brands find talent here.
+        </h2>
+        <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          {SPORTS.map((s) => (
+            <Link
+              key={s}
+              href={`/search?sport=${encodeURIComponent(s)}`}
+              className="group relative h-32 overflow-hidden rounded-2xl"
+            >
+              <Image
+                src={sportImageUrl(s, 400)}
+                alt={s}
+                fill
+                sizes="200px"
+                className="object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-ink/50 transition-colors group-hover:bg-ink/30" />
+              <span className="absolute bottom-3 left-3 font-mono text-[11px] font-semibold uppercase tracking-widest text-white">
+                {s}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* WHY ATHLLO */}
       <section className="border-y border-line bg-surface py-20 md:py-28">
         <div className="container-x">
-          <div className="flex items-end justify-between">
-            <div>
-              <span className="eyebrow">Featured talent</span>
-              <h2 className="display mt-4 text-4xl md:text-5xl">On the rise this week</h2>
-            </div>
-            <Link href="/search" className="hidden md:block">
-              <Button variant="outline">
-                See all <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURED.map((a) => (
-              <Card key={a.name} className="overflow-hidden transition-shadow hover:shadow-lift">
-                <div className="relative h-44 bg-gradient-to-br from-ink to-[#1a2540]">
-                  <div className="absolute inset-0 opacity-40" style={{ background: "radial-gradient(circle at 70% 20%, #1b39ff55, transparent 60%)" }} />
-                  <span className="absolute left-4 top-4 font-mono text-[11px] uppercase tracking-widest text-white/50">
-                    {a.sport}
-                  </span>
-                  <div className="absolute bottom-4 left-4">
-                    <div className="stat-num text-3xl font-bold text-white">{a.reach}</div>
-                    <div className="font-mono text-[10px] uppercase tracking-widest text-white/40">
-                      total reach
-                    </div>
-                  </div>
+          <span className="eyebrow">Why Athllo</span>
+          <h2 className="display mt-4 max-w-xl text-4xl md:text-5xl">
+            Built for real deals, not just discovery.
+          </h2>
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+            {[
+              {
+                icon: ShieldCheck,
+                title: "Verified reach",
+                body: "Every athlete's audience numbers are checked before they're marked verified — no vanity metrics.",
+              },
+              {
+                icon: LineChart,
+                title: "Deal analytics",
+                body: "Track inquiries, response rates, and campaign performance from a single dashboard.",
+              },
+              {
+                icon: Users,
+                title: "Direct relationships",
+                body: "No agents, no middlemen. Athletes and brands negotiate and communicate directly.",
+              },
+            ].map((f) => (
+              <div key={f.title} className="flex gap-4">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-wash text-brand">
+                  <f.icon className="h-5 w-5" />
+                </span>
+                <div>
+                  <h3 className="font-display text-lg font-bold">{f.title}</h3>
+                  <p className="mt-1.5 text-[15px] leading-relaxed text-muted">{f.body}</p>
                 </div>
-                <div className="p-5">
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="font-display text-lg font-bold">{a.name}</h3>
-                    {a.verified && <BadgeCheck className="h-4 w-4 text-brand" />}
-                  </div>
-                  <p className="text-sm text-muted">{a.loc}</p>
-                  <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
-                    <span className="stat-num text-sm font-bold">{a.rate}<span className="font-sans font-normal text-muted"> /campaign</span></span>
-                    <Link href="/search" className="text-sm font-medium text-brand hover:text-brand-ink">
-                      View →
-                    </Link>
-                  </div>
-                </div>
-              </Card>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* TWO SIDES */}
-      <section className="container-x grid gap-5 py-20 md:grid-cols-2 md:py-28" id="for-athletes">
-        <Card className="flex flex-col justify-between p-9">
-          <div>
+      <section className="container-x grid gap-5 py-20 md:grid-cols-2 md:py-28">
+        <Card className="relative flex flex-col justify-between overflow-hidden p-9">
+          <Image
+            src={sportImageUrl("Climbing", 900)}
+            alt=""
+            fill
+            sizes="50vw"
+            className="object-cover opacity-15"
+          />
+          <div className="relative">
             <Badge className="border-brand/20 bg-brand-wash text-brand">For athletes</Badge>
             <h2 className="display mt-5 text-3xl md:text-4xl">Turn your reach into revenue.</h2>
             <p className="mt-4 text-[15px] leading-relaxed text-muted">
@@ -194,12 +285,20 @@ export default function HomePage() {
               Set your rate, control your terms, keep more of every deal.
             </p>
           </div>
-          <Link href="/signup" className="mt-8">
-            <Button>Create athlete profile <ArrowRight className="h-4 w-4" /></Button>
-          </Link>
+          <div className="relative mt-8 flex gap-3">
+            <Link href="/signup"><Button>Create profile <ArrowRight className="h-4 w-4" /></Button></Link>
+            <Link href="/for-athletes"><Button variant="outline">Learn more</Button></Link>
+          </div>
         </Card>
-        <Card className="flex flex-col justify-between p-9" id="for-brands">
-          <div>
+        <Card className="relative flex flex-col justify-between overflow-hidden p-9">
+          <Image
+            src={sportImageUrl("Basketball", 900)}
+            alt=""
+            fill
+            sizes="50vw"
+            className="object-cover opacity-15"
+          />
+          <div className="relative">
             <Badge className="border-energy/20 bg-energy/10 text-energy">For brands</Badge>
             <h2 className="display mt-5 text-3xl md:text-4xl">Find talent that actually fits.</h2>
             <p className="mt-4 text-[15px] leading-relaxed text-muted">
@@ -207,16 +306,24 @@ export default function HomePage() {
               conversation, and pay securely — all in one place.
             </p>
           </div>
-          <Link href="/signup" className="mt-8">
-            <Button variant="ink">Start sponsoring <ArrowRight className="h-4 w-4" /></Button>
-          </Link>
+          <div className="relative mt-8 flex gap-3">
+            <Link href="/signup"><Button variant="ink">Start sponsoring <ArrowRight className="h-4 w-4" /></Button></Link>
+            <Link href="/for-brands"><Button variant="outline">Learn more</Button></Link>
+          </div>
         </Card>
       </section>
 
       {/* CTA */}
-      <section className="container-x pb-24" id="contact">
+      <section className="container-x pb-24">
         <div className="relative overflow-hidden rounded-3xl bg-ink px-8 py-16 text-center text-white md:py-20">
-          <div aria-hidden className="absolute inset-0 opacity-50" style={{ background: "radial-gradient(circle at 50% 0%, #1b39ff44, transparent 55%)" }} />
+          <Image
+            src={sportImageUrl("Cycling", 1600)}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover opacity-20"
+          />
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-ink/60" />
           <div className="relative">
             <h2 className="display mx-auto max-w-2xl text-4xl md:text-5xl">
               The next deal is one profile away.

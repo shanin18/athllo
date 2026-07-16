@@ -1,11 +1,14 @@
 import Link from "next/link";
+import Image from "next/image";
 import { SiteNav } from "@/components/marketing/site-nav";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Avatar } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, SlidersHorizontal } from "lucide-react";
 import { getAthletes } from "@/lib/data/athletes";
+import { sportImageUrl } from "@/lib/sport-images";
 
 export const metadata = { title: "Discover athletes" };
 export const revalidate = 60;
@@ -59,19 +62,28 @@ export default async function SearchPage() {
           {ATHLETES.map((a) => (
             <Link key={a.slug} href={`/athletes/${a.slug}`}>
               <Card className="overflow-hidden transition-shadow hover:shadow-lift">
-                <div className="relative h-40 bg-gradient-to-br from-ink to-[#1a2540]">
-                  <span className="absolute left-4 top-4 font-mono text-[11px] uppercase tracking-widest text-white/50">
+                <div className="relative h-40">
+                  <Image
+                    src={sportImageUrl(a.sport)}
+                    alt={a.sport}
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" />
+                  <span className="absolute left-4 top-4 font-mono text-[11px] uppercase tracking-widest text-white/70">
                     {a.sport}
                   </span>
                   <div className="absolute bottom-4 left-4">
                     <div className="stat-num text-2xl font-bold text-white">{a.reach}</div>
-                    <div className="font-mono text-[10px] uppercase tracking-widest text-white/40">
+                    <div className="font-mono text-[10px] uppercase tracking-widest text-white/60">
                       total reach
                     </div>
                   </div>
                 </div>
                 <div className="p-5">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2.5">
+                    <Avatar seed={a.slug} size={28} className="-mt-8 border-2 border-surface" />
                     <h3 className="font-display text-lg font-bold">{a.name}</h3>
                     {a.verified && <BadgeCheck className="h-4 w-4 text-brand" />}
                   </div>

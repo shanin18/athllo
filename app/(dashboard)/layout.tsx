@@ -1,21 +1,24 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LayoutGrid, User, Inbox, Handshake, Wallet, Search, Megaphone } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { LayoutGrid, User, Inbox, Handshake, Wallet, Search, Megaphone, LogOut } from "lucide-react";
+import { getCurrentProfile } from "@/lib/supabase/server";
+import { signOut } from "@/lib/actions/auth";
+import { Avatar } from "@/components/ui/avatar";
+import { DashboardNavLink } from "@/components/dashboard/nav-link";
 
 const ATHLETE_NAV = [
   { href: "/athlete", label: "Overview", icon: LayoutGrid },
-  { href: "/athlete#profile", label: "My profile", icon: User },
-  { href: "/athlete#inquiries", label: "Inquiries", icon: Inbox },
-  { href: "/athlete#deals", label: "Deals", icon: Handshake },
-  { href: "/athlete#payouts", label: "Payouts", icon: Wallet },
+  { href: "/athlete/profile", label: "My profile", icon: User },
+  { href: "/athlete/inquiries", label: "Inquiries", icon: Inbox },
+  { href: "/athlete/deals", label: "Deals", icon: Handshake },
+  { href: "/athlete/payouts", label: "Payouts", icon: Wallet },
   { href: "/search", label: "Discover", icon: Search },
 ];
 
 const SPONSOR_NAV = [
   { href: "/sponsor", label: "Overview", icon: LayoutGrid },
-  { href: "/sponsor#opportunities", label: "Opportunities", icon: Megaphone },
-  { href: "/sponsor#deals", label: "Deals", icon: Handshake },
+  { href: "/sponsor/profile", label: "Company profile", icon: User },
+  { href: "/sponsor/opportunities", label: "Opportunities", icon: Megaphone },
+  { href: "/sponsor/deals", label: "Deals", icon: Handshake },
   { href: "/search", label: "Discover", icon: Search },
 ];
 
@@ -25,18 +28,10 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   // Auth guard — middleware also protects, this is defense in depth.
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
-  const NAV = profile?.role === "sponsor" ? SPONSOR_NAV : ATHLETE_NAV;
+  const profile = await getCurrentProfile();
+  if (!profile) redirect("/login");
+  const { user, role } = profile;
+  const NAV = role === "sponsor" ? SPONSOR_NAV : ATHLETE_NAV;
 
   return (
     <div className="grid min-h-dvh grid-cols-1 md:grid-cols-[240px_1fr]">
@@ -49,18 +44,26 @@ export default async function DashboardLayout({
         </div>
         <nav className="flex-1 space-y-1 p-4">
           {NAV.map((n) => (
-            <Link
-              key={n.label}
-              href={n.href}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-ink-soft transition-colors hover:bg-brand-wash hover:text-brand"
-            >
-              <n.icon className="h-4 w-4" />
+            <DashboardNavLink key={n.label} href={n.href} icon={<n.icon className="h-4 w-4" />}>
               {n.label}
-            </Link>
+            </DashboardNavLink>
           ))}
         </nav>
-        <div className="border-t border-line p-4">
-          <div className="truncate text-xs text-muted">{user.email}</div>
+        <div className="flex items-center gap-3 border-t border-line p-4">
+          <Avatar seed={user.email ?? user.id} size={32} />
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-xs font-medium text-ink-soft">{user.email}</div>
+            <div className="text-[11px] capitalize text-muted">{role}</div>
+          </div>
+          <form action={signOut}>
+            <button
+              type="submit"
+              title="Log out"
+              className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-muted transition-colors hover:bg-brand-wash hover:text-brand"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </form>
         </div>
       </aside>
       <main className="bg-bg">{children}</main>

@@ -30,9 +30,14 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const { data, error } = await supabase.auth.getUser();
+    if (!error) {
+      user = data.user;
+      break;
+    }
+  }
 
   const path = request.nextUrl.pathname;
   const isProtected = PROTECTED.some((p) => path === p || path.startsWith(`${p}/`));

@@ -1,28 +1,29 @@
+import { redirect } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
 import { Search, Megaphone, Handshake } from "lucide-react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 
 export const metadata = { title: "Brand dashboard" };
 
 export default async function SponsorDashboard() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   const { data: profile } = await supabase
     .from("sponsor_profiles")
-    .select("id")
-    .eq("user_id", user!.id)
+    .select("id, company_name")
+    .eq("user_id", user.id)
     .maybeSingle();
 
   const [{ count: savedCount }, { data: opportunities }] = await Promise.all([
     supabase
       .from("saved_profiles")
       .select("id", { count: "exact", head: true })
-      .eq("user_id", user!.id),
+      .eq("user_id", user.id),
     supabase
       .from("opportunities")
       .select("id, title, status, sports(name)")
@@ -42,9 +43,14 @@ export default async function SponsorDashboard() {
   return (
     <div className="px-6 py-8 md:px-10">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-extrabold">Overview</h1>
-          <p className="mt-1 text-sm text-muted">Find talent and manage your campaigns.</p>
+        <div className="flex items-center gap-4">
+          <Avatar seed={user.email ?? user.id} size={48} />
+          <div>
+            <h1 className="font-display text-2xl font-extrabold">
+              {profile?.company_name ?? "Overview"}
+            </h1>
+            <p className="mt-1 text-sm text-muted">Find talent and manage your campaigns.</p>
+          </div>
         </div>
         <Link href="/search"><Button size="sm"><Search className="h-4 w-4" /> Find athletes</Button></Link>
       </div>
@@ -62,7 +68,12 @@ export default async function SponsorDashboard() {
       </div>
 
       <Card className="mt-6 p-6">
-        <h2 className="font-display text-lg font-bold">Your opportunities</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-lg font-bold">Your opportunities</h2>
+          <Link href="/sponsor/opportunities" className="text-sm font-medium text-brand hover:text-brand-ink">
+            View all
+          </Link>
+        </div>
         <div className="mt-4 divide-y divide-line">
           {(opportunities ?? []).length === 0 && (
             <p className="py-3.5 text-sm text-muted">

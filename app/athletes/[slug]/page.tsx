@@ -1,13 +1,15 @@
-import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { SiteNav } from "@/components/marketing/site-nav";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Avatar } from "@/components/ui/avatar";
 import { BadgeCheck, MapPin, Instagram, Youtube } from "lucide-react";
 import { getAthleteBySlug } from "@/lib/data/athletes";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { AthleteCta } from "@/components/marketing/athlete-cta";
+import { sportImageUrl } from "@/lib/sport-images";
 
 export const revalidate = 60;
 
@@ -30,10 +32,7 @@ export default async function AthleteProfile({
   const a = await getAthleteBySlug(slug);
   if (!a) notFound();
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -41,17 +40,23 @@ export default async function AthleteProfile({
       <main className="flex-1">
         {/* Hero */}
         <div className="relative overflow-hidden bg-ink text-white">
-          <div
-            aria-hidden
-            className="absolute inset-0 opacity-40"
-            style={{ background: "radial-gradient(circle at 80% 10%, #1b39ff55, transparent 55%)" }}
+          <Image
+            src={sportImageUrl(a.sport, 1600)}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-30"
           />
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-ink/40" />
           <div className="container-x relative py-14">
             <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">
               {a.sport}
             </span>
             <div className="mt-3 flex flex-wrap items-end justify-between gap-6">
-              <div>
+              <div className="flex items-center gap-5">
+                <Avatar seed={a.slug} size={88} className="border-2 border-white/20" />
+                <div>
                 <h1 className="display flex items-center gap-3 text-5xl md:text-6xl">
                   {a.name}
                   {a.verified && <BadgeCheck className="h-8 w-8 text-[#7d92ff]" />}
@@ -60,6 +65,7 @@ export default async function AthleteProfile({
                   <MapPin className="h-4 w-4" /> {a.loc}
                 </p>
                 <p className="mt-2 max-w-lg text-lg text-white/80">{a.headline}</p>
+                </div>
               </div>
               <div className="text-right">
                 <div className="stat-num text-5xl font-bold text-[#7d92ff]">{a.reach}</div>

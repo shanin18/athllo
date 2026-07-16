@@ -1,29 +1,31 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, TrendingUp, Inbox, Handshake } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { formatMoney, formatReach } from "@/lib/utils";
+import { Avatar } from "@/components/ui/avatar";
 
 export const metadata = { title: "Athlete dashboard" };
 
 export default async function AthleteDashboard() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   const { data: profile } = await supabase
     .from("athlete_profiles")
     .select("id, display_name, total_reach, verification_status")
-    .eq("user_id", user!.id)
+    .eq("user_id", user.id)
     .maybeSingle();
 
   const [{ count: inquiryCount }, { data: deals }, { data: inquiries }] = await Promise.all([
     supabase
       .from("inquiries")
       .select("id", { count: "exact", head: true })
-      .eq("recipient_id", user!.id)
+      .eq("recipient_id", user.id)
       .eq("status", "new"),
     supabase
       .from("deals")
@@ -33,7 +35,7 @@ export default async function AthleteDashboard() {
     supabase
       .from("inquiries")
       .select("subject, created_at, users:sender_id(email)")
-      .eq("recipient_id", user!.id)
+      .eq("recipient_id", user.id)
       .order("created_at", { ascending: false })
       .limit(3),
   ]);
@@ -54,20 +56,25 @@ export default async function AthleteDashboard() {
   return (
     <div className="px-6 py-8 md:px-10">
       <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="font-display text-2xl font-extrabold">
-              {profile?.display_name ?? "Overview"}
-            </h1>
-            {profile?.verification_status === "verified" && (
-              <Badge className="border-brand/20 bg-brand-wash text-brand">
-                <BadgeCheck className="h-3 w-3" /> Verified
-              </Badge>
-            )}
+        <div className="flex items-center gap-4">
+          <Avatar seed={user.email ?? user.id} size={48} />
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="font-display text-2xl font-extrabold">
+                {profile?.display_name ?? "Overview"}
+              </h1>
+              {profile?.verification_status === "verified" && (
+                <Badge className="border-brand/20 bg-brand-wash text-brand">
+                  <BadgeCheck className="h-3 w-3" /> Verified
+                </Badge>
+              )}
+            </div>
+            <p className="mt-1 text-sm text-muted">Here's how your profile is performing.</p>
           </div>
-          <p className="mt-1 text-sm text-muted">Here's how your profile is performing.</p>
         </div>
-        <Button variant="outline" size="sm">Edit profile</Button>
+        <Link href="/athlete/profile">
+          <Button variant="outline" size="sm">Edit profile</Button>
+        </Link>
       </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -86,8 +93,13 @@ export default async function AthleteDashboard() {
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <Card className="p-6" id="inquiries">
-          <h2 className="font-display text-lg font-bold">Recent inquiries</h2>
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-lg font-bold">Recent inquiries</h2>
+            <Link href="/athlete/inquiries" className="text-sm font-medium text-brand hover:text-brand-ink">
+              View all
+            </Link>
+          </div>
           <div className="mt-4 divide-y divide-line">
             {(inquiries ?? []).length === 0 && (
               <p className="py-3.5 text-sm text-muted">No inquiries yet.</p>
@@ -105,13 +117,15 @@ export default async function AthleteDashboard() {
             ))}
           </div>
         </Card>
-        <Card className="p-6" id="payouts">
+        <Card className="p-6">
           <h2 className="font-display text-lg font-bold">Payouts</h2>
           <p className="mt-1 text-sm text-muted">Connect Stripe to receive payments.</p>
           <div className="mt-5 rounded-xl border border-dashed border-line p-5 text-center">
             <div className="stat-num text-2xl font-bold">$0.00</div>
             <div className="text-xs text-muted">available balance</div>
-            <Button size="sm" className="mt-4 w-full">Set up payouts</Button>
+            <Link href="/athlete/payouts">
+              <Button size="sm" className="mt-4 w-full">Set up payouts</Button>
+            </Link>
           </div>
         </Card>
       </div>

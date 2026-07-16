@@ -1,27 +1,17 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentProfile } from "@/lib/supabase/server";
+import { signOut } from "@/lib/actions/auth";
+import { LogOut } from "lucide-react";
 
 export async function SiteNav() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  let dashboardHref = "/athlete";
-  if (user) {
-    const { data: profile } = await supabase
-      .from("users")
-      .select("role")
-      .eq("id", user.id)
-      .maybeSingle();
-    if (profile?.role === "sponsor") dashboardHref = "/sponsor";
-  }
+  const profile = await getCurrentProfile();
+  const dashboardHref = profile?.role === "sponsor" ? "/sponsor" : "/athlete";
 
   const links = [
     { href: "/search", label: "Discover" },
-    { href: "/#for-athletes", label: "For athletes" },
-    { href: "/#for-brands", label: "For brands" },
+    { href: "/for-athletes", label: "For athletes" },
+    { href: "/for-brands", label: "For brands" },
     { href: "/pricing", label: "Pricing" },
   ];
   return (
@@ -49,10 +39,21 @@ export async function SiteNav() {
         </nav>
 
         <div className="flex items-center gap-2">
-          {user ? (
-            <Link href={dashboardHref}>
-              <Button size="sm">Dashboard</Button>
-            </Link>
+          {profile ? (
+            <>
+              <Link href={dashboardHref}>
+                <Button size="sm">Dashboard</Button>
+              </Link>
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  title="Log out"
+                  className="grid h-9 w-9 place-items-center rounded-full text-muted transition-colors hover:bg-brand-wash hover:text-brand"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </form>
+            </>
           ) : (
             <>
               <Link href="/login" className="hidden sm:block">
