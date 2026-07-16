@@ -11,16 +11,10 @@ export default async function AthleteDeals() {
   if (!user) redirect("/login");
   const supabase = await createClient();
 
-  const { data: athleteProfile } = await supabase
-    .from("athlete_profiles")
-    .select("id")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
+  // RLS already scopes `deals` to rows where the caller is a party.
   const { data: deals } = await supabase
     .from("deals")
     .select("id, title, amount, currency, status, start_date, end_date, sponsor_profiles(company_name)")
-    .eq("athlete_id", athleteProfile?.id ?? "")
     .order("created_at", { ascending: false });
 
   return (

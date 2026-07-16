@@ -1,9 +1,11 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LayoutGrid, User, Inbox, Handshake, Wallet, Search, Megaphone, LogOut } from "lucide-react";
 import { getCurrentProfile } from "@/lib/supabase/server";
 import { signOut } from "@/lib/actions/auth";
 import { Avatar } from "@/components/ui/avatar";
 import { DashboardNavLink } from "@/components/dashboard/nav-link";
+import { MobileSidebar } from "@/components/dashboard/mobile-sidebar";
 
 const ATHLETE_NAV = [
   { href: "/athlete", label: "Overview", icon: LayoutGrid },
@@ -35,13 +37,15 @@ export default async function DashboardLayout({
 
   return (
     <div className="grid min-h-dvh grid-cols-1 md:grid-cols-[240px_1fr]">
+      <MobileSidebar nav={NAV} email={user.email ?? ""} role={role} />
+
       <aside className="hidden border-r border-line bg-surface md:flex md:flex-col">
-        <div className="flex h-16 items-center gap-2 border-b border-line px-6">
-          <span className="grid h-7 w-7 place-items-center rounded-md bg-ink text-white font-display font-extrabold text-sm">
+        <Link href="/" className="flex h-16 items-center gap-2 border-b border-line px-6">
+          <span className="grid h-7 w-7 place-items-center rounded-md bg-panel text-white font-display font-extrabold text-sm">
             A
           </span>
           <span className="font-display text-lg font-extrabold">Athllo</span>
-        </div>
+        </Link>
         <nav className="flex-1 space-y-1 p-4">
           {NAV.map((n) => (
             <DashboardNavLink key={n.label} href={n.href} icon={<n.icon className="h-4 w-4" />}>

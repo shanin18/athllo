@@ -10,7 +10,7 @@ export function Avatar({
   size?: number;
   className?: string;
 }) {
-  const src = `https://api.dicebear.com/9.x/glass/png?seed=${encodeURIComponent(seed)}&size=${size * 2}`;
+  const src = `https://api.dicebear.com/9.x/initials/png?seed=${encodeURIComponent(seed)}&size=${size * 2}&backgroundType=solid&fontWeight=600`;
   return (
     <Image
       src={src}

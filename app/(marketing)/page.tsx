@@ -17,7 +17,7 @@ export default async function HomePage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden bg-ink text-white">
+      <section className="relative overflow-hidden bg-panel text-white">
         <Image
           src={sportImageUrl("Track & Field", 1800)}
           alt=""
@@ -26,7 +26,7 @@ export default async function HomePage() {
           sizes="100vw"
           className="object-cover opacity-25"
         />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/85 to-ink" />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-panel/70 via-panel/85 to-panel" />
         <div className="container-x relative grid gap-14 pb-16 pt-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:pb-24 lg:pt-28">
           <div className="animate-fade-up">
             <span className="eyebrow text-white/50">Sports sponsorship, measured</span>
@@ -168,7 +168,7 @@ export default async function HomePage() {
                         sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                         className="object-cover"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-panel/80 via-panel/10 to-transparent" />
                       <span className="absolute left-4 top-4 font-mono text-[11px] uppercase tracking-widest text-white/70">
                         {a.sport}
                       </span>
@@ -181,7 +181,7 @@ export default async function HomePage() {
                     </div>
                     <div className="p-5">
                       <div className="flex items-center gap-2.5">
-                        <Avatar seed={a.slug} size={28} className="-mt-8 border-2 border-surface" />
+                        <Avatar seed={a.slug} size={28} />
                         <h3 className="font-display text-lg font-bold">{a.name}</h3>
                         {a.verified && <BadgeCheck className="h-4 w-4 text-brand" />}
                       </div>
@@ -219,7 +219,7 @@ export default async function HomePage() {
                 sizes="200px"
                 className="object-cover transition-transform duration-300 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-ink/50 transition-colors group-hover:bg-ink/30" />
+              <div className="absolute inset-0 bg-panel/50 transition-colors group-hover:bg-panel/30" />
               <span className="absolute bottom-3 left-3 font-mono text-[11px] font-semibold uppercase tracking-widest text-white">
                 {s}
               </span>
@@ -315,7 +315,7 @@ export default async function HomePage() {
 
       {/* CTA */}
       <section className="container-x pb-24">
-        <div className="relative overflow-hidden rounded-3xl bg-ink px-8 py-16 text-center text-white md:py-20">
+        <div className="relative overflow-hidden rounded-3xl bg-panel px-8 py-16 text-center text-white md:py-20">
           <Image
             src={sportImageUrl("Cycling", 1600)}
             alt=""
@@ -323,7 +323,7 @@ export default async function HomePage() {
             sizes="100vw"
             className="object-cover opacity-20"
           />
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-ink/60" />
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-panel via-panel/80 to-panel/60" />
           <div className="relative">
             <h2 className="display mx-auto max-w-2xl text-4xl md:text-5xl">
               The next deal is one profile away.

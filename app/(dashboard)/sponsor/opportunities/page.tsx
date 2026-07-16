@@ -10,16 +10,10 @@ export default async function SponsorOpportunities() {
   if (!user) redirect("/login");
   const supabase = await createClient();
 
-  const { data: sponsorProfile } = await supabase
-    .from("sponsor_profiles")
-    .select("id")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
   const { data: opportunities } = await supabase
     .from("opportunities")
-    .select("id, title, description, status, budget_min, budget_max, created_at")
-    .eq("sponsor_id", sponsorProfile?.id ?? "")
+    .select("id, title, description, status, budget_min, budget_max, created_at, sponsor_profiles!inner(user_id)")
+    .eq("sponsor_profiles.user_id", user.id)
     .order("created_at", { ascending: false });
 
   return (

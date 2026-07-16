@@ -9,7 +9,7 @@ const button = cva(
       variant: {
         primary:
           "bg-brand text-white hover:bg-brand-ink shadow-[0_6px_20px_-8px_rgba(27,57,255,0.6)]",
-        ink: "bg-ink text-white hover:bg-ink/90",
+        ink: "bg-panel text-white hover:bg-panel/90",
         outline: "border border-line bg-surface text-ink hover:bg-brand-wash",
         ghost: "text-ink hover:bg-black/[0.04]",
         energy: "bg-energy text-white hover:brightness-95",

@@ -34,7 +34,7 @@ const BENEFITS = [
 export default function ForAthletesPage() {
   return (
     <>
-      <section className="relative overflow-hidden bg-ink text-white">
+      <section className="relative overflow-hidden bg-panel text-white">
         <Image
           src={sportImageUrl("Surfing", 1800)}
           alt=""
@@ -43,7 +43,7 @@ export default function ForAthletesPage() {
           sizes="100vw"
           className="object-cover opacity-30"
         />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-ink/50" />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-panel via-panel/80 to-panel/50" />
         <div className="container-x relative py-24 md:py-32">
           <Badge className="border-brand/30 bg-white/10 text-white">For athletes</Badge>
           <h1 className="display mt-5 max-w-2xl text-5xl md:text-6xl">
@@ -75,7 +75,7 @@ export default function ForAthletesPage() {
       </section>
 
       <section className="container-x pb-24">
-        <div className="relative overflow-hidden rounded-3xl bg-ink px-8 py-16 text-center text-white md:py-20">
+        <div className="relative overflow-hidden rounded-3xl bg-panel px-8 py-16 text-center text-white md:py-20">
           <div className="relative">
             <h2 className="display mx-auto max-w-xl text-4xl md:text-5xl">
               Your next sponsor is searching right now.

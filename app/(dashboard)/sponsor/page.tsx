@@ -13,21 +13,16 @@ export default async function SponsorDashboard() {
   if (!user) redirect("/login");
   const supabase = await createClient();
 
-  const { data: profile } = await supabase
-    .from("sponsor_profiles")
-    .select("id, company_name")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  const [{ count: savedCount }, { data: opportunities }] = await Promise.all([
+  const [{ data: profile }, { count: savedCount }, { data: opportunities }] = await Promise.all([
+    supabase.from("sponsor_profiles").select("id, company_name").eq("user_id", user.id).maybeSingle(),
     supabase
       .from("saved_profiles")
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id),
     supabase
       .from("opportunities")
-      .select("id, title, status, sports(name)")
-      .eq("sponsor_id", profile?.id ?? "")
+      .select("id, title, status, sports(name), sponsor_profiles!inner(user_id)")
+      .eq("sponsor_profiles.user_id", user.id)
       .order("created_at", { ascending: false }),
   ]);
 

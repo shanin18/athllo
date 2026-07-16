@@ -14,9 +14,9 @@ const ROWS = [
 export function StatTicker() {
   const stream = [...ROWS, ...ROWS];
   return (
-    <div className="relative overflow-hidden border-y border-white/10 bg-ink py-3">
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-ink to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-ink to-transparent" />
+    <div className="relative overflow-hidden border-y border-white/10 bg-panel py-3">
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-panel to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-panel to-transparent" />
       <div className="flex w-max animate-marquee items-center gap-10">
         {stream.map((r, i) => (
           <div key={i} className="flex items-center gap-3 whitespace-nowrap">

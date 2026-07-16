@@ -32,7 +32,7 @@ export function SiteFooter() {
       <div className="container-x grid gap-10 py-14 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="grid h-7 w-7 place-items-center rounded-md bg-ink text-white font-display font-extrabold text-sm">
+            <span className="grid h-7 w-7 place-items-center rounded-md bg-panel text-white font-display font-extrabold text-sm">
               A
             </span>
             <span className="font-display text-lg font-extrabold tracking-tight">

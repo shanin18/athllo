@@ -39,7 +39,7 @@ export default async function AthleteProfile({
       <SiteNav />
       <main className="flex-1">
         {/* Hero */}
-        <div className="relative overflow-hidden bg-ink text-white">
+        <div className="relative overflow-hidden bg-panel text-white">
           <Image
             src={sportImageUrl(a.sport, 1600)}
             alt=""
@@ -48,7 +48,7 @@ export default async function AthleteProfile({
             sizes="100vw"
             className="object-cover opacity-30"
           />
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-ink/40" />
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-panel via-panel/80 to-panel/40" />
           <div className="container-x relative py-14">
             <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">
               {a.sport}

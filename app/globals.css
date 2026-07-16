@@ -3,16 +3,18 @@
 @tailwind utilities;
 
 :root {
-  --bg: #f6f7f9;
-  --surface: #ffffff;
-  --ink: #0b1120;
-  --ink-soft: #3a4256;
-  --muted: #6b7488;
-  --line: #e7e9ef;
-  --brand: #1b39ff;
-  --brand-ink: #1230d6;
-  --brand-wash: #eef1ff;
-  --energy: #ff5a2c;
+  --bg: #0b0f1a;
+  --surface: #10151f;
+  --ink: #f2f4f8;
+  --ink-soft: #c3c9d6;
+  --muted: #8890a0;
+  --line: #232936;
+  --brand: #5c78ff;
+  --brand-ink: #7d92ff;
+  --brand-wash: #171d33;
+  --energy: #ff7a52;
+  /* fixed — decorative dark surfaces (hero/CTA panels) */
+  --panel-dark: #0b1120;
 }
 
 @layer base {

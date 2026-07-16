@@ -21,6 +21,7 @@ const config: Config = {
           wash: "var(--brand-wash)",
         },
         energy: "var(--energy)",
+        panel: "var(--panel-dark)",
       },
       fontFamily: {
         display: ["var(--font-display)", "sans-serif"],

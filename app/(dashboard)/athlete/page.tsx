@@ -15,23 +15,19 @@ export default async function AthleteDashboard() {
   if (!user) redirect("/login");
   const supabase = await createClient();
 
-  const { data: profile } = await supabase
-    .from("athlete_profiles")
-    .select("id, display_name, total_reach, verification_status")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  const [{ count: inquiryCount }, { data: deals }, { data: inquiries }] = await Promise.all([
+  const [{ data: profile }, { count: inquiryCount }, { data: deals }, { data: inquiries }] = await Promise.all([
+    supabase
+      .from("athlete_profiles")
+      .select("id, display_name, total_reach, verification_status")
+      .eq("user_id", user.id)
+      .maybeSingle(),
     supabase
       .from("inquiries")
       .select("id", { count: "exact", head: true })
       .eq("recipient_id", user.id)
       .eq("status", "new"),
-    supabase
-      .from("deals")
-      .select("amount")
-      .eq("athlete_id", profile?.id ?? "")
-      .eq("status", "active"),
+    // RLS already scopes `deals` to rows where the caller is a party, so no athlete_id filter is needed.
+    supabase.from("deals").select("amount").eq("status", "active"),
     supabase
       .from("inquiries")
       .select("subject, created_at, users:sender_id(email)")
