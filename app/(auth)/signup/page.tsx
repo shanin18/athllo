@@ -59,7 +59,7 @@ function SignUpForm() {
   return (
     <div>
       <h1 className="font-display text-3xl font-extrabold">Create your account</h1>
-      <p className="mt-2 text-sm text-muted">Join Athllo in under a minute.</p>
+      <p className="mt-2 text-sm text-muted">Join Podium in under a minute.</p>
 
       <div className="mt-7 grid grid-cols-2 gap-2 rounded-xl bg-black/[0.03] p-1">
         {(["athlete", "sponsor"] as const).map((r) => (
@@ -99,7 +99,7 @@ function SignUpForm() {
           />
         </div>
         {error && <p className="text-sm text-energy">{error}</p>}
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button type="submit" className="w-full" loading={loading}>
           {loading ? "Creating account…" : "Create account"}
         </Button>
       </form>

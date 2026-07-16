@@ -58,7 +58,7 @@ function LoginForm() {
   return (
     <div>
       <h1 className="font-display text-3xl font-extrabold">Welcome back</h1>
-      <p className="mt-2 text-sm text-muted">Log in to your Athllo account.</p>
+      <p className="mt-2 text-sm text-muted">Log in to your Podium account.</p>
 
       <form onSubmit={onSubmit} className="mt-7 space-y-4">
         <div>
@@ -87,13 +87,13 @@ function LoginForm() {
           />
         </div>
         {error && <p className="text-sm text-energy">{error}</p>}
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button type="submit" className="w-full" loading={loading}>
           {loading ? "Logging in…" : "Log in"}
         </Button>
       </form>
 
       <p className="mt-6 text-center text-sm text-muted">
-        New to Athllo?{" "}
+        New to Podium?{" "}
         <Link href="/signup" className="font-medium text-brand hover:text-brand-ink">
           Create an account
         </Link>

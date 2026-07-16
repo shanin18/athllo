@@ -1,8 +1,6 @@
-import Link from "next/link";
 import { Check } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { CheckoutButton } from "@/components/marketing/checkout-button";
-import { getCurrentUser } from "@/lib/supabase/server";
 
 export const metadata = { title: "Pricing" };
 
@@ -36,9 +34,7 @@ const tiers = [
   },
 ];
 
-export default async function PricingPage() {
-  const user = await getCurrentUser();
-
+export default function PricingPage() {
   return (
     <div className="container-x py-20 md:py-28">
       <div className="mx-auto max-w-2xl text-center">
@@ -75,17 +71,9 @@ export default async function PricingPage() {
                 </li>
               ))}
             </ul>
-            {t.tier === "free" ? (
-              <Link href="/signup" className="mt-8 block">
-                <span className="flex h-11 w-full items-center justify-center rounded-full border border-line bg-surface text-[15px] font-medium text-ink transition-colors hover:bg-brand-wash">
-                  {t.cta}
-                </span>
-              </Link>
-            ) : (
-              <CheckoutButton tier={t.tier} isSignedIn={!!user} highlight={t.highlight}>
-                {t.cta}
-              </CheckoutButton>
-            )}
+            <CheckoutButton tier={t.tier} highlight={t.highlight}>
+              {t.cta}
+            </CheckoutButton>
           </Card>
         ))}
       </div>

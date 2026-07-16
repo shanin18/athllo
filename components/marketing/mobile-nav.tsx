@@ -28,12 +28,18 @@ export function MobileNav({
         <Menu className="h-5 w-5" />
       </button>
 
-      {open && (
-        <div className="fixed inset-0 z-[60] bg-panel/60" onClick={() => setOpen(false)}>
-          <div
-            className="ml-auto flex h-full w-72 flex-col bg-surface p-6"
-            onClick={(e) => e.stopPropagation()}
-          >
+      <div
+        className={`fixed inset-0 z-[60] bg-panel/60 transition-opacity duration-300 ${
+          open ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+        onClick={() => setOpen(false)}
+      >
+        <div
+          className={`ml-auto flex h-full w-72 flex-col bg-surface p-6 shadow-lift transition-transform duration-300 ease-out ${
+            open ? "translate-x-0" : "translate-x-full"
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
             <div className="flex items-center justify-between">
               <span className="font-display text-lg font-extrabold">Menu</span>
               <button
@@ -85,9 +91,8 @@ export function MobileNav({
                 </>
               )}
             </div>
-          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

@@ -11,10 +11,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           style={{ background: "radial-gradient(circle, #1b39ff, transparent 70%)" }}
         />
         <Link href="/" className="relative flex items-center gap-2">
-          <span className="grid h-8 w-8 place-items-center rounded-md bg-white text-ink font-display font-extrabold">
-            A
+          <span className="grid h-8 w-8 place-items-center rounded-md bg-white text-panel font-display font-extrabold">
+            P
           </span>
-          <span className="font-display text-xl font-extrabold">Athllo</span>
+          <span className="font-display text-xl font-extrabold">Podium</span>
         </Link>
         <div className="relative">
           <h2 className="display text-4xl leading-tight">

@@ -27,14 +27,14 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Athllo — Where athletes and brands connect",
-    template: "%s · Athllo",
+    default: "Podium — Where athletes and brands connect",
+    template: "%s · Podium",
   },
   description:
-    "Athllo is the marketplace where athletes showcase their reach and brands find, vet, and sponsor the right talent — with secure payments built in.",
+    "Podium is the marketplace where athletes showcase their reach and brands find, vet, and sponsor the right talent — with secure payments built in.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
   openGraph: {
-    title: "Athllo — Where athletes and brands connect",
+    title: "Podium — Where athletes and brands connect",
     description:
       "The marketplace where athletes showcase their reach and brands sponsor the right talent.",
     type: "website",

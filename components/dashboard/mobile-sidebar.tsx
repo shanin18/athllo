@@ -5,14 +5,13 @@ import Link from "next/link";
 import { Menu, X, LogOut } from "lucide-react";
 import { DashboardNavLink } from "@/components/dashboard/nav-link";
 import { signOut } from "@/lib/actions/auth";
-import type { LucideIcon } from "lucide-react";
 
 export function MobileSidebar({
   nav,
   email,
   role,
 }: {
-  nav: { href: string; label: string; icon: LucideIcon }[];
+  nav: { href: string; label: string; icon: React.ReactNode }[];
   email: string;
   role: string;
 }) {
@@ -23,9 +22,9 @@ export function MobileSidebar({
       <div className="flex h-14 items-center justify-between border-b border-line bg-surface px-4">
         <Link href="/" className="flex items-center gap-2">
           <span className="grid h-7 w-7 place-items-center rounded-md bg-panel text-white font-display font-extrabold text-sm">
-            A
+            P
           </span>
-          <span className="font-display text-lg font-extrabold">Athllo</span>
+          <span className="font-display text-lg font-extrabold">Podium</span>
         </Link>
         <button
           type="button"
@@ -37,18 +36,24 @@ export function MobileSidebar({
         </button>
       </div>
 
-      {open && (
-        <div className="fixed inset-0 z-[60] bg-panel/60" onClick={() => setOpen(false)}>
-          <div
-            className="flex h-full w-72 flex-col bg-surface p-4"
-            onClick={(e) => e.stopPropagation()}
-          >
+      <div
+        className={`fixed inset-0 z-[60] bg-panel/60 transition-opacity duration-300 ${
+          open ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+        onClick={() => setOpen(false)}
+      >
+        <div
+          className={`flex h-full w-72 flex-col bg-surface p-4 shadow-lift transition-transform duration-300 ease-out ${
+            open ? "translate-x-0" : "-translate-x-full"
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
             <div className="flex items-center justify-between px-2 py-2">
               <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
                 <span className="grid h-7 w-7 place-items-center rounded-md bg-panel text-white font-display font-extrabold text-sm">
-                  A
+                  P
                 </span>
-                <span className="font-display text-lg font-extrabold">Athllo</span>
+                <span className="font-display text-lg font-extrabold">Podium</span>
               </Link>
               <button
                 type="button"
@@ -63,7 +68,7 @@ export function MobileSidebar({
             <nav className="mt-4 flex-1 space-y-1">
               {nav.map((n) => (
                 <div key={n.label} onClick={() => setOpen(false)}>
-                  <DashboardNavLink href={n.href} icon={<n.icon className="h-4 w-4" />}>
+                  <DashboardNavLink href={n.href} icon={n.icon}>
                     {n.label}
                   </DashboardNavLink>
                 </div>
@@ -82,9 +87,8 @@ export function MobileSidebar({
                 </button>
               </form>
             </div>
-          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

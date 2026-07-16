@@ -1,7 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PROTECTED = ["/dashboard", "/athlete", "/sponsor", "/admin"];
+const PROTECTED = ["/dashboard", "/athlete", "/sponsor", "/admin", "/billing"];
 
 /**
  * Refreshes the auth session on every request and guards protected routes.

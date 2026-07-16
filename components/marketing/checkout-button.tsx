@@ -1,56 +1,51 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
 
+// Stripe isn't configured yet — always route through the real, current
+// session state (checked client-side to avoid any stale server-render
+// of the signed-in status) instead of hitting /api/checkout.
 export function CheckoutButton({
-  tier,
-  isSignedIn,
   highlight,
+  variant,
   children,
 }: {
-  tier: "pro" | "elite";
-  isSignedIn: boolean;
+  tier: "free" | "pro" | "elite";
   highlight: boolean;
+  variant?: "primary" | "outline";
   children: React.ReactNode;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   async function handleClick() {
-    if (!isSignedIn) {
-      router.push(`/signup?next=/pricing`);
-      return;
-    }
     setLoading(true);
-    setError(null);
-    const res = await fetch("/api/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tier }),
-    });
-    const data = await res.json();
-    setLoading(false);
-    if (!res.ok || !data.url) {
-      setError(data.error ?? "Something went wrong");
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      setLoading(false);
+      router.push("/signup?next=/billing");
       return;
     }
-    window.location.href = data.url;
+
+    setLoading(false);
+    router.push("/billing");
   }
 
   return (
-    <div className="mt-8">
-      <Button
-        variant={highlight ? "primary" : "outline"}
-        className="w-full"
-        onClick={handleClick}
-        disabled={loading}
-      >
-        {loading ? "Redirecting…" : children}
-      </Button>
-      {error && <p className="mt-2 text-center text-xs text-energy">{error}</p>}
-    </div>
+    <Button
+      variant={variant ?? (highlight ? "primary" : "outline")}
+      className="mt-8 w-full"
+      onClick={handleClick}
+      loading={loading}
+    >
+      {children}
+    </Button>
   );
 }
