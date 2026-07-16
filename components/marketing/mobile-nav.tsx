@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Menu, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/actions/auth";
+import { NavLinks } from "@/components/marketing/nav-links";
 
 export function MobileNav({
   links,
@@ -53,16 +54,13 @@ export function MobileNav({
             </div>
 
             <nav className="mt-8 flex flex-col gap-1">
-              {links.map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  onClick={() => setOpen(false)}
-                  className="rounded-lg px-3 py-2.5 text-sm font-medium text-ink-soft hover:bg-brand-wash hover:text-brand"
-                >
-                  {l.label}
-                </Link>
-              ))}
+              <NavLinks
+                links={links}
+                onNavigate={() => setOpen(false)}
+                className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-brand-wash hover:text-brand"
+                activeClassName="bg-brand-wash text-brand"
+                inactiveClassName="text-ink-soft"
+              />
             </nav>
 
             <div className="mt-auto flex flex-col gap-2 pt-6">

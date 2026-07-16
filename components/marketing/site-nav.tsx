@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { getCurrentProfile } from "@/lib/supabase/server";
 import { signOut } from "@/lib/actions/auth";
 import { MobileNav } from "@/components/marketing/mobile-nav";
+import { NavLinks } from "@/components/marketing/nav-links";
 import { LogOut } from "lucide-react";
 
 export async function SiteNav() {
@@ -28,15 +29,7 @@ export async function SiteNav() {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="text-sm font-medium text-ink-soft transition-colors hover:text-ink"
-            >
-              {l.label}
-            </Link>
-          ))}
+          <NavLinks links={links} className="text-sm font-medium" />
         </nav>
 
         <div className="flex items-center gap-2">

@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { StatTicker } from "@/components/marketing/stat-ticker";
-import { BrandMarquee } from "@/components/marketing/brand-marquee";
+import { BrandCarousel } from "@/components/marketing/brand-carousel";
 import { CountUp } from "@/components/marketing/count-up";
 import { TiltCard } from "@/components/marketing/tilt-card";
 import { SportsShowcase } from "@/components/marketing/sports-showcase";
@@ -101,8 +101,6 @@ export default async function HomePage() {
 
         <StatTicker />
       </section>
-
-      <BrandMarquee />
 
       {/* HOW IT WORKS */}
       <section className="container-x py-20 md:py-28">
@@ -303,6 +301,8 @@ export default async function HomePage() {
           </div>
         </Card>
       </section>
+
+      <BrandCarousel />
 
       {/* CTA */}
       <section className="container-x pb-24">
