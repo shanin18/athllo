@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Archivo, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import { RouteProgress } from "@/components/route-progress";
+import { SmoothScroll } from "@/components/smooth-scroll";
 import "./globals.css";
 
 const display = Archivo({
@@ -27,14 +28,14 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Podium — Where athletes and brands connect",
-    template: "%s · Podium",
+    default: "Athlex — Where athletes and brands connect",
+    template: "%s · Athlex",
   },
   description:
-    "Podium is the marketplace where athletes showcase their reach and brands find, vet, and sponsor the right talent — with secure payments built in.",
+    "Athlex is the marketplace where athletes showcase their reach and brands find, vet, and sponsor the right talent — with secure payments built in.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
   openGraph: {
-    title: "Podium — Where athletes and brands connect",
+    title: "Athlex — Where athletes and brands connect",
     description:
       "The marketplace where athletes showcase their reach and brands sponsor the right talent.",
     type: "website",
@@ -49,6 +50,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
       <body className="font-sans antialiased" suppressHydrationWarning>
+        <SmoothScroll />
         <Suspense fallback={null}>
           <RouteProgress />
         </Suspense>

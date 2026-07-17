@@ -6,9 +6,20 @@ export type AthleteCard = {
   name: string;
   sport: string;
   reach: string;
+  rawReach: number;
   loc: string;
   rate: string;
+  rawRate: number;
   verified: boolean;
+};
+
+export type AthleteFilters = {
+  q?: string;
+  sport?: string;
+  minReach?: number;
+  location?: string;
+  maxBudget?: number;
+  sort?: "reach" | "recent" | "relevance";
 };
 
 export type AthleteDetail = AthleteCard & {
@@ -28,20 +39,43 @@ function toCard(row: any): AthleteCard {
     name: row.display_name,
     sport: row.sports?.name ?? "Unspecified",
     reach: formatReach(row.total_reach ?? 0),
+    rawReach: row.total_reach ?? 0,
     loc: row.location ?? "",
     rate: formatMoney((row.campaign_rate ?? 0) * 100),
+    rawRate: row.campaign_rate ?? 0,
     verified: row.verification_status === "verified",
   };
 }
 
-export async function getAthletes(): Promise<AthleteCard[]> {
+export async function getAthletes(filters: AthleteFilters = {}): Promise<AthleteCard[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("athlete_profiles")
-    .select(CARD_SELECT)
-    .order("total_reach", { ascending: false });
+  let query = supabase.from("athlete_profiles").select(CARD_SELECT);
+
+  if (filters.q) {
+    query = query.ilike("display_name", `%${filters.q}%`);
+  }
+  if (filters.minReach) {
+    query = query.gte("total_reach", filters.minReach);
+  }
+  if (filters.location) {
+    query = query.ilike("location", `%${filters.location}%`);
+  }
+  if (filters.maxBudget) {
+    query = query.lte("campaign_rate", filters.maxBudget);
+  }
+
+  if (filters.sort === "recent") {
+    query = query.order("created_at", { ascending: false });
+  } else {
+    query = query.order("total_reach", { ascending: false });
+  }
+
+  const { data, error } = await query;
   if (error || !data) return [];
-  return data.map(toCard);
+  const rows = filters.sport && filters.sport !== "All sports"
+    ? data.filter((r: any) => r.sports?.name === filters.sport)
+    : data;
+  return rows.map(toCard);
 }
 
 export async function getSportCounts(): Promise<Record<string, number>> {

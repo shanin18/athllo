@@ -36,7 +36,7 @@ export default async function HomePage() {
               <span className="text-[#7d92ff]">brand behind it.</span>
             </h1>
             <p className="mt-6 max-w-md text-[17px] leading-relaxed text-white/60">
-              Podium is the marketplace where athletes showcase their real reach and brands
+              Athlex is the marketplace where athletes showcase their real reach and brands
               find, vet, and sponsor the right talent — with secure payments built in.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -128,7 +128,7 @@ export default async function HomePage() {
               icon: Wallet,
               step: "03",
               title: "Get paid securely",
-              body: "Fund a deal through Stripe. Athletes are paid out on completion — Podium handles the plumbing.",
+              body: "Fund a deal through Stripe. Athletes are paid out on completion — Athlex handles the plumbing.",
             },
           ].map((f) => (
             <Card
@@ -220,7 +220,7 @@ export default async function HomePage() {
       {/* WHY ATHLLO */}
       <section className="border-y border-line bg-surface py-20 md:py-28">
         <div className="container-x">
-          <span className="eyebrow">Why Podium</span>
+          <span className="eyebrow">Why Athlex</span>
           <h2 className="display mt-4 max-w-xl text-4xl md:text-5xl">
             Built for real deals, not just discovery.
           </h2>
@@ -314,7 +314,7 @@ export default async function HomePage() {
               The next deal is one profile away.
             </h2>
             <p className="mx-auto mt-4 max-w-md text-white/60">
-              Join athletes and brands already building on Podium.
+              Join athletes and brands already building on Athlex.
             </p>
             <div className="mt-8 flex justify-center gap-3">
               <Link href="/signup">

@@ -14,16 +14,16 @@ export function SiteFooter() {
     {
       title: "Company",
       links: [
-        { href: "/#about", label: "About" },
-        { href: "/#contact", label: "Contact" },
-        { href: "/pricing", label: "Careers" },
+        { href: "/about", label: "About" },
+        { href: "/contact", label: "Contact" },
+        { href: "/careers", label: "Careers" },
       ],
     },
     {
       title: "Legal",
       links: [
-        { href: "/#terms", label: "Terms" },
-        { href: "/#privacy", label: "Privacy" },
+        { href: "/terms", label: "Terms" },
+        { href: "/privacy", label: "Privacy" },
       ],
     },
   ];
@@ -33,10 +33,10 @@ export function SiteFooter() {
         <div>
           <div className="flex items-center gap-2">
             <span className="grid h-7 w-7 place-items-center rounded-md bg-panel text-white font-display font-extrabold text-sm">
-              P
+              A
             </span>
             <span className="font-display text-lg font-extrabold tracking-tight">
-              Podium
+              Athlex
             </span>
           </div>
           <p className="mt-3 max-w-xs text-sm text-muted">
@@ -63,7 +63,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-line">
         <div className="container-x flex flex-col items-center justify-between gap-2 py-6 text-xs text-muted sm:flex-row">
-          <span>© {new Date().getFullYear()} Podium. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} Athlex. All rights reserved.</span>
           <span className="font-mono uppercase tracking-widest">Built for athletes</span>
         </div>
       </div>

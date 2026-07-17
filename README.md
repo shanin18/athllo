@@ -1,4 +1,4 @@
-# Podium
+# Athlex
 
 The marketplace where athletes showcase their reach and brands find, vet, and sponsor the right talent — with secure payments built in.
 

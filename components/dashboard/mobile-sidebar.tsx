@@ -22,9 +22,9 @@ export function MobileSidebar({
       <div className="flex h-14 items-center justify-between border-b border-line bg-surface px-4">
         <Link href="/" className="flex items-center gap-2">
           <span className="grid h-7 w-7 place-items-center rounded-md bg-panel text-white font-display font-extrabold text-sm">
-            P
+            A
           </span>
-          <span className="font-display text-lg font-extrabold">Podium</span>
+          <span className="font-display text-lg font-extrabold">Athlex</span>
         </Link>
         <button
           type="button"
@@ -51,9 +51,9 @@ export function MobileSidebar({
             <div className="flex items-center justify-between px-2 py-2">
               <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
                 <span className="grid h-7 w-7 place-items-center rounded-md bg-panel text-white font-display font-extrabold text-sm">
-                  P
+                  A
                 </span>
-                <span className="font-display text-lg font-extrabold">Podium</span>
+                <span className="font-display text-lg font-extrabold">Athlex</span>
               </Link>
               <button
                 type="button"

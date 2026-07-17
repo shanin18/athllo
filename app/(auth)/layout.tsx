@@ -12,9 +12,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         />
         <Link href="/" className="relative flex items-center gap-2">
           <span className="grid h-8 w-8 place-items-center rounded-md bg-white text-panel font-display font-extrabold">
-            P
+            A
           </span>
-          <span className="font-display text-xl font-extrabold">Podium</span>
+          <span className="font-display text-xl font-extrabold">Athlex</span>
         </Link>
         <div className="relative">
           <h2 className="display text-4xl leading-tight">

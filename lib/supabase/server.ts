@@ -38,10 +38,17 @@ export async function createClient() {
  */
 export const getCurrentUser = cache(async (): Promise<User | null> => {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user;
+  } catch {
+    // Stale/invalid refresh token cookie (e.g. after a project reset) —
+    // treat as signed out rather than crashing the render. Middleware
+    // and the client will clear the bad cookie on next interaction.
+    return null;
+  }
 });
 
 export type UserRole = "athlete" | "sponsor" | "admin";

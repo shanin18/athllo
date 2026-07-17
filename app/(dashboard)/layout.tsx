@@ -10,6 +10,7 @@ import { MobileSidebar } from "@/components/dashboard/mobile-sidebar";
 const ATHLETE_NAV = [
   { href: "/athlete", label: "Overview", icon: LayoutGrid },
   { href: "/athlete/profile", label: "My profile", icon: User },
+  { href: "/athlete/opportunities", label: "Opportunities", icon: Megaphone },
   { href: "/athlete/inquiries", label: "Inquiries", icon: Inbox },
   { href: "/athlete/deals", label: "Deals", icon: Handshake },
   { href: "/athlete/payouts", label: "Payouts", icon: Wallet },
@@ -48,9 +49,9 @@ export default async function DashboardLayout({
       <aside className="hidden border-r border-line bg-surface md:flex md:flex-col">
         <Link href="/" className="flex h-16 items-center gap-2 border-b border-line px-6">
           <span className="grid h-7 w-7 place-items-center rounded-md bg-panel text-white font-display font-extrabold text-sm">
-            P
+            A
           </span>
-          <span className="font-display text-lg font-extrabold">Podium</span>
+          <span className="font-display text-lg font-extrabold">Athlex</span>
         </Link>
         <nav className="flex-1 space-y-1 p-4">
           {NAV.map((n) => (

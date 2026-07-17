@@ -1,22 +1,43 @@
 import Link from "next/link";
 import Image from "next/image";
 import { SiteNav } from "@/components/marketing/site-nav";
+import { SiteFooter } from "@/components/marketing/site-footer";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { BadgeCheck, SlidersHorizontal } from "lucide-react";
+import { BadgeCheck } from "lucide-react";
 import { getAthletes } from "@/lib/data/athletes";
 import { sportImageUrl } from "@/lib/sport-images";
+import { SearchFilters } from "@/components/marketing/search-filters";
 
 export const metadata = { title: "Discover athletes" };
 export const revalidate = 60;
 
 const SPORTS = ["All sports", "Surfing", "Track & Field", "Basketball", "Climbing", "Football", "Cycling"];
+const REACH_TIERS: Record<string, number> = { "500K+": 500_000, "1M+": 1_000_000, "3M+": 3_000_000 };
 
-export default async function SearchPage() {
-  const ATHLETES = await getAthletes();
+export default async function SearchPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  const sp = await searchParams;
+  const q = sp.q ?? "";
+  const sport = sp.sport ?? "All sports";
+  const reachTier = sp.reach ?? "";
+  const location = sp.location ?? "";
+  const maxBudget = sp.budget ? Number(sp.budget) : undefined;
+  const sort = (sp.sort as "reach" | "recent" | "relevance") ?? "reach";
+
+  const ATHLETES = await getAthletes({
+    q: q || undefined,
+    sport,
+    minReach: REACH_TIERS[reachTier],
+    location: location || undefined,
+    maxBudget,
+    sort,
+  });
+
   return (
     <>
       <SiteNav />
@@ -24,38 +45,19 @@ export default async function SearchPage() {
         <h1 className="display text-3xl md:text-4xl">Discover athletes</h1>
         <p className="mt-2 text-muted">Filter by sport, reach, budget, and location.</p>
 
-        {/* Filter bar */}
-        <div className="mt-6 flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-surface p-3 shadow-card">
-          <Input placeholder="Search by name or sport…" className="max-w-xs flex-1" />
-          <select className="h-11 rounded-xl border border-line bg-surface px-3 text-[15px] text-ink">
-            {SPORTS.map((s) => (
-              <option key={s}>{s}</option>
-            ))}
-          </select>
-          <select className="h-11 rounded-xl border border-line bg-surface px-3 text-[15px] text-ink">
-            <option>Any reach</option>
-            <option>500K+</option>
-            <option>1M+</option>
-            <option>3M+</option>
-          </select>
-          <Button variant="outline" size="sm" className="ml-auto">
-            <SlidersHorizontal className="h-4 w-4" /> More filters
-          </Button>
-        </div>
+        <SearchFilters
+          sports={SPORTS}
+          values={{ q, sport, reach: reachTier, location, budget: sp.budget ?? "", sort }}
+        />
 
         <div className="mt-4 flex items-center justify-between">
           <span className="font-mono text-xs uppercase tracking-widest text-muted">
             {ATHLETES.length} athletes
           </span>
-          <select className="h-9 rounded-lg border border-line bg-surface px-3 text-sm text-ink-soft">
-            <option>Sort: Relevance</option>
-            <option>Sort: Reach</option>
-            <option>Sort: Recently active</option>
-          </select>
         </div>
 
         {ATHLETES.length === 0 && (
-          <p className="mt-16 text-center text-sm text-muted">No athletes found yet.</p>
+          <p className="mt-16 text-center text-sm text-muted">No athletes match those filters.</p>
         )}
 
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -101,6 +103,7 @@ export default async function SearchPage() {
           ))}
         </div>
       </div>
+      <SiteFooter />
     </>
   );
 }

@@ -8,7 +8,7 @@ import { signInSchema } from "@/lib/validation/schemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const DEMO_CREDENTIALS = { email: "demo@athllo.test", password: "demo1234" };
+const DEMO_CREDENTIALS = { email: "demo@athlex.test", password: "demo1234" };
 
 export default function LoginPage() {
   return (
@@ -44,21 +44,30 @@ function LoginForm() {
 
     setLoading(true);
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
+      setLoading(false);
       setError(error.message);
       return;
     }
-    router.push(next && next.startsWith("/") ? next : "/athlete");
+
+    const { data: profile } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", data.user.id)
+      .maybeSingle();
+    setLoading(false);
+
+    const roleHome = profile?.role === "sponsor" ? "/sponsor" : "/athlete";
+    router.push(next && next.startsWith("/") ? next : roleHome);
     router.refresh();
   }
 
   return (
     <div>
       <h1 className="font-display text-3xl font-extrabold">Welcome back</h1>
-      <p className="mt-2 text-sm text-muted">Log in to your Podium account.</p>
+      <p className="mt-2 text-sm text-muted">Log in to your Athlex account.</p>
 
       <form onSubmit={onSubmit} className="mt-7 space-y-4">
         <div>
@@ -93,7 +102,7 @@ function LoginForm() {
       </form>
 
       <p className="mt-6 text-center text-sm text-muted">
-        New to Podium?{" "}
+        New to Athlex?{" "}
         <Link href="/signup" className="font-medium text-brand hover:text-brand-ink">
           Create an account
         </Link>

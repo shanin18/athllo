@@ -8,7 +8,7 @@ const admin = createClient(url, key, { auth: { autoRefreshToken: false, persistS
 
 const ATHLETES = [
   {
-    email: "sana.ito@athllo.test",
+    email: "sana.ito@athlex.test",
     slug: "sana-ito",
     display_name: "Sana Ito",
     headline: "3x national champion. Ocean advocate.",
@@ -24,7 +24,7 @@ const ATHLETES = [
     is_featured: true,
   },
   {
-    email: "maya.okonkwo@athllo.test",
+    email: "maya.okonkwo@athlex.test",
     slug: "maya-okonkwo",
     display_name: "Maya Okonkwo",
     headline: "Sprinter. Two-time European medalist.",
@@ -40,7 +40,7 @@ const ATHLETES = [
     is_featured: true,
   },
   {
-    email: "tariq.bello@athllo.test",
+    email: "tariq.bello@athlex.test",
     slug: "tariq-bello",
     display_name: "Tariq Bello",
     headline: "Guard. Rising star on the continental circuit.",
@@ -56,7 +56,7 @@ const ATHLETES = [
     is_featured: true,
   },
   {
-    email: "aisha.karim@athllo.test",
+    email: "aisha.karim@athlex.test",
     slug: "aisha-karim",
     display_name: "Aisha Karim",
     headline: "Sport climber. Route-setting the future.",
@@ -72,7 +72,7 @@ const ATHLETES = [
     is_featured: false,
   },
   {
-    email: "diego.ramos@athllo.test",
+    email: "diego.ramos@athlex.test",
     slug: "diego-ramos",
     display_name: "Diego Ramos",
     headline: "Winger. Academy graduate turned starter.",
@@ -88,7 +88,7 @@ const ATHLETES = [
     is_featured: false,
   },
   {
-    email: "leo.andersen@athllo.test",
+    email: "leo.andersen@athlex.test",
     slug: "leo-andersen",
     display_name: "Leo Andersen",
     headline: "Endurance cyclist. Nordic circuit regular.",

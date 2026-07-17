@@ -21,10 +21,10 @@ export async function SiteNav() {
       <div className="container-x flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <span className="grid h-7 w-7 place-items-center rounded-md bg-panel text-white font-display font-extrabold text-sm">
-            P
+            A
           </span>
           <span className="font-display text-lg font-extrabold tracking-tight">
-            Podium
+            Athlex
           </span>
         </Link>
 

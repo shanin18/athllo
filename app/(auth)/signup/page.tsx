@@ -26,6 +26,7 @@ function SignUpForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [needsConfirmation, setNeedsConfirmation] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,7 +40,7 @@ function SignUpForm() {
 
     setLoading(true);
     const supabase = createClient();
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -53,13 +54,34 @@ function SignUpForm() {
       setError(error.message);
       return;
     }
+
+    if (!data.session) {
+      setNeedsConfirmation(true);
+      return;
+    }
+
     router.push(next && next.startsWith("/") ? next : `/${role}`);
+  }
+
+  if (needsConfirmation) {
+    return (
+      <div>
+        <h1 className="font-display text-3xl font-extrabold">Check your email</h1>
+        <p className="mt-3 text-sm text-muted">
+          We've sent a confirmation link to <span className="font-medium text-ink">{email}</span>.
+          Click it to activate your account, then log in.
+        </p>
+        <Link href="/login" className="mt-6 inline-block">
+          <Button variant="outline">Go to login</Button>
+        </Link>
+      </div>
+    );
   }
 
   return (
     <div>
       <h1 className="font-display text-3xl font-extrabold">Create your account</h1>
-      <p className="mt-2 text-sm text-muted">Join Podium in under a minute.</p>
+      <p className="mt-2 text-sm text-muted">Join Athlex in under a minute.</p>
 
       <div className="mt-7 grid grid-cols-2 gap-2 rounded-xl bg-black/[0.03] p-1">
         {(["athlete", "sponsor"] as const).map((r) => (

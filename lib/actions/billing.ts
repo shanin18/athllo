@@ -19,8 +19,7 @@ export async function upgradePlan(tier: Exclude<PlanTier, "free">): Promise<Bill
 
   const { error } = await supabase
     .from("subscriptions")
-    .update({ tier, status: "active" })
-    .eq("user_id", user.id);
+    .upsert({ user_id: user.id, tier, status: "active" }, { onConflict: "user_id" });
 
   if (error) return { ok: false, message: "Could not update your plan." };
 
@@ -37,8 +36,7 @@ export async function downgradeToFree(): Promise<BillingActionState> {
 
   const { error } = await supabase
     .from("subscriptions")
-    .update({ tier: "free", status: "active" })
-    .eq("user_id", user.id);
+    .upsert({ user_id: user.id, tier: "free", status: "active" }, { onConflict: "user_id" });
 
   if (error) return { ok: false, message: "Could not update your plan." };
 

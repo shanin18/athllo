@@ -2,18 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { sportImageUrl } from "@/lib/sport-images";
 import { cn } from "@/lib/utils";
-
-const SportModel = dynamic(
-  () => import("@/components/marketing/sport-model").then((m) => m.SportModel),
-  {
-    ssr: false,
-    loading: () => <div className="h-full w-full animate-pulse bg-panel" />,
-  }
-);
 
 export function SportsShowcase({
   sports,
@@ -44,21 +37,31 @@ export function SportsShowcase({
         ))}
       </div>
 
-      <div className="relative h-72 overflow-hidden rounded-2xl bg-panel md:h-96">
-        <div key={active} className="absolute inset-0 animate-fade-up">
-          <SportModel sport={active} />
-        </div>
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-panel via-panel/10 to-transparent" />
-        <div className="pointer-events-none absolute bottom-6 left-6 right-6 flex items-end justify-between">
+      <div className="relative h-72 overflow-hidden rounded-2xl md:h-96">
+        {sports.map((s) => (
+          <Image
+            key={s}
+            src={sportImageUrl(s, 1200)}
+            alt={s}
+            fill
+            sizes="(min-width: 1024px) 60vw, 100vw"
+            className={cn(
+              "object-cover transition-opacity duration-500",
+              active === s ? "opacity-100" : "opacity-0"
+            )}
+          />
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-t from-panel via-panel/20 to-transparent" />
+        <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
           <div>
             <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/60">
-              {active} · drag to rotate
+              {active}
             </span>
             <div className="stat-num mt-1 text-4xl font-bold text-white">
               {counts[active] ?? 0} <span className="text-lg font-normal text-white/60">athletes</span>
             </div>
           </div>
-          <Link href={`/search?sport=${encodeURIComponent(active)}`} className="pointer-events-auto">
+          <Link href={`/search?sport=${encodeURIComponent(active)}`}>
             <Button size="sm">
               Browse {active} <ArrowRight className="h-4 w-4" />
             </Button>
