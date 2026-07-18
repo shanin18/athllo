@@ -11,6 +11,7 @@ export type AthleteCard = {
   rate: string;
   rawRate: number;
   verified: boolean;
+  avatarUrl: string | null;
 };
 
 export type AthleteFilters = {
@@ -20,18 +21,21 @@ export type AthleteFilters = {
   location?: string;
   maxBudget?: number;
   sort?: "reach" | "recent" | "relevance";
+  page?: number;
+  pageSize?: number;
 };
 
 export type AthleteDetail = AthleteCard & {
   userId: string;
   headline: string;
   bio: string;
+  coverUrl: string | null;
   achievements: string[];
   stats: [string, string][];
 };
 
 const CARD_SELECT =
-  "slug, display_name, location, total_reach, campaign_rate, verification_status, sports(name)";
+  "slug, display_name, location, total_reach, campaign_rate, verification_status, avatar_url, sports(name)";
 
 function toCard(row: any): AthleteCard {
   return {
@@ -44,15 +48,23 @@ function toCard(row: any): AthleteCard {
     rate: formatMoney((row.campaign_rate ?? 0) * 100),
     rawRate: row.campaign_rate ?? 0,
     verified: row.verification_status === "verified",
+    avatarUrl: row.avatar_url ?? null,
   };
 }
 
-export async function getAthletes(filters: AthleteFilters = {}): Promise<AthleteCard[]> {
+export async function getAthletes(
+  filters: AthleteFilters = {}
+): Promise<{ items: AthleteCard[]; hasMore: boolean }> {
   const supabase = await createClient();
-  let query = supabase.from("athlete_profiles").select(CARD_SELECT);
+  const hasSportFilter = !!filters.sport && filters.sport !== "All sports";
+  const select = hasSportFilter ? CARD_SELECT.replace("sports(name)", "sports!inner(name)") : CARD_SELECT;
+  let query = supabase.from("athlete_profiles").select(select);
 
   if (filters.q) {
     query = query.ilike("display_name", `%${filters.q}%`);
+  }
+  if (hasSportFilter) {
+    query = query.eq("sports.name", filters.sport);
   }
   if (filters.minReach) {
     query = query.gte("total_reach", filters.minReach);
@@ -70,12 +82,16 @@ export async function getAthletes(filters: AthleteFilters = {}): Promise<Athlete
     query = query.order("total_reach", { ascending: false });
   }
 
+  const pageSize = filters.pageSize ?? 8;
+  const page = filters.page ?? 0;
+  const from = page * pageSize;
+  const to = from + pageSize; // fetch one extra to detect hasMore
+  query = query.range(from, to);
+
   const { data, error } = await query;
-  if (error || !data) return [];
-  const rows = filters.sport && filters.sport !== "All sports"
-    ? data.filter((r: any) => r.sports?.name === filters.sport)
-    : data;
-  return rows.map(toCard);
+  if (error || !data) return { items: [], hasMore: false };
+  const hasMore = data.length > pageSize;
+  return { items: data.slice(0, pageSize).map(toCard), hasMore };
 }
 
 export async function getSportCounts(): Promise<Record<string, number>> {
@@ -108,7 +124,7 @@ export async function getAthleteBySlug(slug: string): Promise<AthleteDetail | nu
   const { data, error } = await supabase
     .from("athlete_profiles")
     .select(
-      "user_id, slug, display_name, headline, bio, location, total_reach, campaign_rate, verification_status, achievements, social_stats, sports(name)"
+      "user_id, slug, display_name, headline, bio, location, total_reach, campaign_rate, verification_status, avatar_url, cover_url, achievements, social_stats, sports(name)"
     )
     .eq("slug", slug)
     .maybeSingle();
@@ -118,6 +134,7 @@ export async function getAthleteBySlug(slug: string): Promise<AthleteDetail | nu
     userId: data.user_id,
     headline: data.headline ?? "",
     bio: data.bio ?? "",
+    coverUrl: data.cover_url ?? null,
     achievements: Array.isArray(data.achievements) ? data.achievements : [],
     stats: Object.entries(data.social_stats ?? {}) as [string, string][],
   };

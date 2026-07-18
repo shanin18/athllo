@@ -26,6 +26,9 @@ export async function sendInquiry(
   if (!parsed.success) {
     return { ok: false, message: parsed.error.issues[0].message };
   }
+  if (parsed.data.recipientId === user.id) {
+    return { ok: false, message: "You can't send an inquiry to yourself." };
+  }
 
   const { error } = await supabase.from("inquiries").insert({
     sender_id: user.id,
@@ -48,6 +51,9 @@ export async function saveToShortlist(recipientId: string): Promise<InquiryActio
 
   if (!user) {
     return { ok: false, message: "You must be signed in to save a profile." };
+  }
+  if (recipientId === user.id) {
+    return { ok: false, message: "You can't shortlist yourself." };
   }
 
   const { error } = await supabase

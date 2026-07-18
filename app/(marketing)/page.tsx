@@ -189,7 +189,7 @@ export default async function HomePage() {
                       </div>
                       <div className="p-5">
                         <div className="flex items-center gap-2.5">
-                          <Avatar seed={a.slug} size={28} />
+                          <Avatar seed={a.slug} src={a.avatarUrl} size={28} />
                           <h3 className="font-display text-lg font-bold">{a.name}</h3>
                           {a.verified && <BadgeCheck className="h-4 w-4 text-brand" />}
                         </div>

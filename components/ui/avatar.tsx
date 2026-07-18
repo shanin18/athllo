@@ -3,14 +3,18 @@ import { cn } from "@/lib/utils";
 
 export function Avatar({
   seed,
+  src: srcProp,
   size = 40,
   className,
 }: {
   seed: string;
+  src?: string | null;
   size?: number;
   className?: string;
 }) {
-  const src = `https://api.dicebear.com/9.x/initials/png?seed=${encodeURIComponent(seed)}&size=${size * 2}&backgroundType=solid&fontWeight=600`;
+  const src =
+    srcProp ||
+    `https://api.dicebear.com/9.x/initials/png?seed=${encodeURIComponent(seed)}&size=${size * 2}&backgroundType=solid&fontWeight=600`;
   return (
     <Image
       src={src}

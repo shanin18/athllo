@@ -16,6 +16,7 @@ export function HeroMedia({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(!video);
+  const [inView, setInView] = useState(false);
 
   useEffect(() => {
     function onScroll() {
@@ -31,22 +32,50 @@ export function HeroMedia({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!video || !ref.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [video]);
+
   return (
     <>
       <div ref={ref} className="absolute inset-0 will-change-transform">
         {video ? (
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            onPlaying={() => setReady(true)}
-            className="h-full w-full object-cover transition-opacity duration-700"
-            style={{ opacity: ready ? opacity / 100 : 0 }}
-          >
-            <source src={video} type="video/mp4" />
-          </video>
+          <>
+            <Image
+              src={src}
+              alt={alt}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover transition-opacity duration-700"
+              style={{ opacity: ready ? 0 : opacity / 100 }}
+            />
+            {inView && (
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="none"
+                onPlaying={() => setReady(true)}
+                className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
+                style={{ opacity: ready ? opacity / 100 : 0 }}
+              >
+                <source src={video} type="video/mp4" />
+              </video>
+            )}
+          </>
         ) : (
           <Image
             src={src}

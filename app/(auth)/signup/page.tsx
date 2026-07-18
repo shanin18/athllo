@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { signUpSchema } from "@/lib/validation/schemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { cn } from "@/lib/utils";
 
 export default function SignUpPage() {
@@ -112,8 +113,7 @@ function SignUpForm() {
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium text-ink-soft">Password</label>
-          <Input
-            type="password"
+          <PasswordInput
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="At least 8 characters"

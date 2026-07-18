@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { signInSchema } from "@/lib/validation/schemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 
 const DEMO_CREDENTIALS = { email: "demo@athlex.test", password: "demo1234" };
 
@@ -87,8 +88,7 @@ function LoginForm() {
               Forgot?
             </Link>
           </div>
-          <Input
-            type="password"
+          <PasswordInput
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Your password"

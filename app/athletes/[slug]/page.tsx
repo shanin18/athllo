@@ -20,7 +20,15 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const a = await getAthleteBySlug(slug);
-  return { title: a ? a.name : "Athlete not found" };
+  if (!a) return { title: "Athlete not found" };
+  const description = a.headline || a.bio || `${a.name} — ${a.sport} athlete on Athlex.`;
+  const image = a.avatarUrl ?? sportImageUrl(a.sport, 1200);
+  return {
+    title: a.name,
+    description,
+    openGraph: { title: a.name, description, images: [image] },
+    twitter: { card: "summary_large_image", title: a.name, description, images: [image] },
+  };
 }
 
 export default async function AthleteProfile({
@@ -40,7 +48,7 @@ export default async function AthleteProfile({
       <main className="flex-1">
         {/* Hero */}
         <div className="relative overflow-hidden bg-panel text-white">
-          <HeroMedia src={sportImageUrl(a.sport, 1600)} opacity={32} />
+          <HeroMedia src={a.coverUrl ?? sportImageUrl(a.sport, 1600)} opacity={a.coverUrl ? 55 : 32} />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-panel via-panel/80 to-panel/40" />
           <div className="container-x relative py-14">
             <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">
@@ -48,7 +56,7 @@ export default async function AthleteProfile({
             </span>
             <div className="mt-3 flex flex-wrap items-end justify-between gap-6">
               <div className="flex items-center gap-5">
-                <Avatar seed={a.slug} size={88} className="border-2 border-white/20" />
+                <Avatar seed={a.slug} src={a.avatarUrl} size={88} className="border-2 border-white/20" />
                 <div>
                 <h1 className="display flex items-center gap-3 text-5xl md:text-6xl">
                   {a.name}
@@ -111,10 +119,18 @@ export default async function AthleteProfile({
                 <span className="stat-num text-2xl font-bold">{a.rate}</span>
               </div>
               <p className="mt-1 text-xs text-muted">per campaign · negotiable</p>
-              <AthleteCta recipientId={a.userId} athleteName={a.name} isSignedIn={!!user} />
-              <p className="mt-4 text-center text-xs text-muted">
-                Payments handled securely via Stripe
-              </p>
+              {user?.id === a.userId ? (
+                <p className="mt-5 rounded-xl bg-brand-wash p-4 text-center text-sm text-brand">
+                  This is your public profile.
+                </p>
+              ) : (
+                <>
+                  <AthleteCta recipientId={a.userId} athleteName={a.name} isSignedIn={!!user} />
+                  <p className="mt-4 text-center text-xs text-muted">
+                    Payments handled securely via Stripe
+                  </p>
+                </>
+              )}
             </Card>
           </div>
         </div>
