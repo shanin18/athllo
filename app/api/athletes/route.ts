@@ -13,5 +13,7 @@ export async function GET(req: NextRequest) {
     page: sp.get("page") ? Number(sp.get("page")) : 0,
     pageSize: 8,
   });
-  return NextResponse.json(result);
+  return NextResponse.json(result, {
+    headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120" },
+  });
 }

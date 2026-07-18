@@ -48,7 +48,12 @@ export default async function AthleteProfile({
       <main className="flex-1">
         {/* Hero */}
         <div className="relative overflow-hidden bg-panel text-white">
-          <HeroMedia src={a.coverUrl ?? sportImageUrl(a.sport, 1600)} opacity={a.coverUrl ? 55 : 32} />
+          <HeroMedia
+            src={a.coverUrl ?? sportImageUrl(a.sport, 1600)}
+            opacity={a.coverUrl ? 55 : 32}
+            animated={!a.coverUrl}
+            objectPosition={a.coverUrl ? a.coverPos : undefined}
+          />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-panel via-panel/80 to-panel/40" />
           <div className="container-x relative py-14">
             <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">
@@ -56,7 +61,13 @@ export default async function AthleteProfile({
             </span>
             <div className="mt-3 flex flex-wrap items-end justify-between gap-6">
               <div className="flex items-center gap-5">
-                <Avatar seed={a.slug} src={a.avatarUrl} size={88} className="border-2 border-white/20" />
+                <Avatar
+                  seed={a.slug}
+                  src={a.avatarUrl}
+                  size={88}
+                  className="border-2 border-white/20"
+                  style={a.avatarUrl ? { objectPosition: a.avatarPos } : undefined}
+                />
                 <div>
                 <h1 className="display flex items-center gap-3 text-5xl md:text-6xl">
                   {a.name}

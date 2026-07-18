@@ -6,11 +6,13 @@ export function Avatar({
   src: srcProp,
   size = 40,
   className,
+  style,
 }: {
   seed: string;
   src?: string | null;
   size?: number;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   const src =
     srcProp ||
@@ -21,8 +23,8 @@ export function Avatar({
       alt=""
       width={size}
       height={size}
-      className={cn("shrink-0 rounded-full border border-line bg-surface", className)}
-      style={{ width: size, height: size }}
+      className={cn("shrink-0 rounded-full border border-line bg-surface object-cover", className)}
+      style={{ width: size, height: size, ...style }}
     />
   );
 }

@@ -113,11 +113,12 @@ export function AthleteResults({
             <Card className="group overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-lift">
               <div className="relative h-40 overflow-hidden">
                 <Image
-                  src={sportImageUrl(a.sport)}
+                  src={a.coverUrl ?? sportImageUrl(a.sport)}
                   alt={a.sport}
                   fill
                   priority={i < 3}
                   sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  style={a.coverUrl ? { objectPosition: a.coverPos } : undefined}
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-panel/80 via-panel/10 to-transparent" />
@@ -133,7 +134,12 @@ export function AthleteResults({
               </div>
               <div className="p-5">
                 <div className="flex items-center gap-2.5">
-                  <Avatar seed={a.slug} src={a.avatarUrl} size={28} />
+                  <Avatar
+                    seed={a.slug}
+                    src={a.avatarUrl}
+                    size={28}
+                    style={a.avatarUrl ? { objectPosition: a.avatarPos } : undefined}
+                  />
                   <h3 className="font-display text-lg font-bold">{a.name}</h3>
                   {a.verified && <BadgeCheck className="h-4 w-4 text-brand" />}
                 </div>

@@ -5,15 +5,15 @@ import { InquiryCard } from "@/components/dashboard/inquiry-card";
 
 export const metadata = { title: "Inquiries" };
 
-export default async function AthleteInquiries() {
+export default async function SponsorInquiries() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   const supabase = await createClient();
 
   const { data: inquiries } = await supabase
     .from("inquiries")
-    .select("id, subject, message, status, created_at, users:sender_id(email)")
-    .eq("recipient_id", user.id)
+    .select("id, subject, message, status, created_at, users:recipient_id(email)")
+    .eq("sender_id", user.id)
     .order("created_at", { ascending: false });
 
   const ids = (inquiries ?? []).map((i) => i.id);
@@ -28,17 +28,17 @@ export default async function AthleteInquiries() {
   return (
     <div className="px-6 py-8 md:px-10">
       <h1 className="font-display text-2xl font-extrabold">Inquiries</h1>
-      <p className="mt-1 text-sm text-muted">Messages from brands interested in working with you.</p>
+      <p className="mt-1 text-sm text-muted">Inquiries you've sent to athletes.</p>
 
       <div className="mt-8 space-y-4">
         {(inquiries ?? []).length === 0 && (
-          <Card className="p-8 text-center text-sm text-muted">No inquiries yet.</Card>
+          <Card className="p-8 text-center text-sm text-muted">You haven't sent any inquiries yet.</Card>
         )}
         {(inquiries ?? []).map((i: any) => (
           <InquiryCard
             key={i.id}
             inquiry={i}
-            counterpartLabel={i.users?.email ?? "Unknown sender"}
+            counterpartLabel={i.users?.email ?? "Unknown athlete"}
             currentUserId={user.id}
             initialMessages={(messages ?? []).filter((m) => m.inquiry_id === i.id)}
           />

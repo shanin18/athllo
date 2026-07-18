@@ -12,6 +12,9 @@ export type AthleteCard = {
   rawRate: number;
   verified: boolean;
   avatarUrl: string | null;
+  avatarPos: string;
+  coverUrl: string | null;
+  coverPos: string;
 };
 
 export type AthleteFilters = {
@@ -29,13 +32,12 @@ export type AthleteDetail = AthleteCard & {
   userId: string;
   headline: string;
   bio: string;
-  coverUrl: string | null;
   achievements: string[];
   stats: [string, string][];
 };
 
 const CARD_SELECT =
-  "slug, display_name, location, total_reach, campaign_rate, verification_status, avatar_url, sports(name)";
+  "slug, display_name, location, total_reach, campaign_rate, verification_status, avatar_url, avatar_pos, cover_url, cover_pos, sports(name)";
 
 function toCard(row: any): AthleteCard {
   return {
@@ -49,6 +51,9 @@ function toCard(row: any): AthleteCard {
     rawRate: row.campaign_rate ?? 0,
     verified: row.verification_status === "verified",
     avatarUrl: row.avatar_url ?? null,
+    avatarPos: row.avatar_pos ?? "50% 50%",
+    coverUrl: row.cover_url ?? null,
+    coverPos: row.cover_pos ?? "50% 50%",
   };
 }
 
@@ -124,7 +129,7 @@ export async function getAthleteBySlug(slug: string): Promise<AthleteDetail | nu
   const { data, error } = await supabase
     .from("athlete_profiles")
     .select(
-      "user_id, slug, display_name, headline, bio, location, total_reach, campaign_rate, verification_status, avatar_url, cover_url, achievements, social_stats, sports(name)"
+      "user_id, slug, display_name, headline, bio, location, total_reach, campaign_rate, verification_status, avatar_url, avatar_pos, cover_url, cover_pos, achievements, social_stats, sports(name)"
     )
     .eq("slug", slug)
     .maybeSingle();
@@ -134,8 +139,10 @@ export async function getAthleteBySlug(slug: string): Promise<AthleteDetail | nu
     userId: data.user_id,
     headline: data.headline ?? "",
     bio: data.bio ?? "",
-    coverUrl: data.cover_url ?? null,
     achievements: Array.isArray(data.achievements) ? data.achievements : [],
-    stats: Object.entries(data.social_stats ?? {}) as [string, string][],
+    stats: Object.entries(data.social_stats ?? {}).map(([platform, count]) => [
+      platform,
+      /^\d+$/.test(String(count)) ? formatReach(Number(count)) : String(count),
+    ]) as [string, string][],
   };
 }

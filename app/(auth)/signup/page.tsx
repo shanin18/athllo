@@ -1,14 +1,14 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useActionState, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { signUpSchema } from "@/lib/validation/schemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { cn } from "@/lib/utils";
+import { signUpWithCustomEmail, type SignUpActionState } from "@/lib/actions/signup";
+
+const initialState: SignUpActionState = { ok: false, message: "" };
 
 export default function SignUpPage() {
   return (
@@ -19,52 +19,11 @@ export default function SignUpPage() {
 }
 
 function SignUpForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const next = searchParams.get("next");
   const [role, setRole] = useState<"athlete" | "sponsor">("athlete");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [needsConfirmation, setNeedsConfirmation] = useState(false);
+  const [state, formAction, pending] = useActionState(signUpWithCustomEmail, initialState);
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-
-    const parsed = signUpSchema.safeParse({ email, password, role });
-    if (!parsed.success) {
-      setError(parsed.error.issues[0].message);
-      return;
-    }
-
-    setLoading(true);
-    const supabase = createClient();
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { role },
-        emailRedirectTo: `${window.location.origin}/${role}`,
-      },
-    });
-    setLoading(false);
-
-    if (error) {
-      setError(error.message);
-      return;
-    }
-
-    if (!data.session) {
-      setNeedsConfirmation(true);
-      return;
-    }
-
-    router.push(next && next.startsWith("/") ? next : `/${role}`);
-  }
-
-  if (needsConfirmation) {
+  if (state.needsConfirmation) {
     return (
       <div>
         <h1 className="font-display text-3xl font-extrabold">Check your email</h1>
@@ -100,11 +59,13 @@ function SignUpForm() {
         ))}
       </div>
 
-      <form onSubmit={onSubmit} className="mt-6 space-y-4">
+      <form action={formAction} className="mt-6 space-y-4">
+        <input type="hidden" name="role" value={role} />
         <div>
           <label className="mb-1.5 block text-sm font-medium text-ink-soft">Email</label>
           <Input
             type="email"
+            name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
@@ -114,15 +75,14 @@ function SignUpForm() {
         <div>
           <label className="mb-1.5 block text-sm font-medium text-ink-soft">Password</label>
           <PasswordInput
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            name="password"
             placeholder="At least 8 characters"
             autoComplete="new-password"
           />
         </div>
-        {error && <p className="text-sm text-energy">{error}</p>}
-        <Button type="submit" className="w-full" loading={loading}>
-          {loading ? "Creating account…" : "Create account"}
+        {state.message && !state.ok && <p className="text-sm text-energy">{state.message}</p>}
+        <Button type="submit" className="w-full" loading={pending}>
+          {pending ? "Creating account…" : "Create account"}
         </Button>
       </form>
 

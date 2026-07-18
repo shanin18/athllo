@@ -72,7 +72,7 @@ export default function ForBrandsPage() {
 
       <section className="container-x pb-24">
         <div className="relative overflow-hidden rounded-3xl bg-panel px-8 py-16 text-center text-white md:py-20">
-          <HeroMedia src={sportImageUrl("Basketball", 1600)} video="/videos/basketball.mp4" opacity={20} />
+          <HeroMedia src={sportImageUrl("Basketball", 1600)} opacity={20} />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-panel via-panel/80 to-panel/60" />
           <div className="relative">
             <h2 className="display mx-auto max-w-xl text-4xl md:text-5xl">

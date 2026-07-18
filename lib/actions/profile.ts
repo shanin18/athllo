@@ -28,6 +28,18 @@ export async function updateAthleteProfile(
     return { ok: false, message: parsed.error.issues[0].message };
   }
 
+  const PLATFORMS = ["Instagram", "YouTube", "TikTok"];
+  const socialStats: Record<string, string> = {};
+  let totalReach = 0;
+  for (const platform of PLATFORMS) {
+    const raw = formData.get(`audience_${platform}`);
+    const count = raw ? Number(raw) : 0;
+    if (count > 0) {
+      socialStats[platform] = String(count);
+      totalReach += count;
+    }
+  }
+
   const { error } = await supabase
     .from("athlete_profiles")
     .update({
@@ -37,6 +49,8 @@ export async function updateAthleteProfile(
       location: parsed.data.location ?? null,
       career_stage: parsed.data.careerStage ?? null,
       campaign_rate: parsed.data.campaignRate ?? null,
+      social_stats: socialStats,
+      total_reach: totalReach,
     })
     .eq("user_id", user.id);
 

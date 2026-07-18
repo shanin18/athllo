@@ -17,8 +17,10 @@ export function AthleteProfileForm({
     location: string | null;
     career_stage: string | null;
     campaign_rate: number | null;
+    social_stats?: Record<string, string> | null;
   } | null;
 }) {
+  const audience = profile?.social_stats ?? {};
   const [state, formAction, pending] = useActionState(updateAthleteProfile, initialState);
 
   return (
@@ -68,6 +70,24 @@ export function AthleteProfileForm({
           defaultValue={profile?.campaign_rate ?? ""}
           placeholder="5000"
         />
+      </div>
+      <div>
+        <p className="mb-1.5 text-sm font-medium text-ink-soft">Audience (follower counts)</p>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {["Instagram", "YouTube", "TikTok"].map((platform) => (
+            <div key={platform}>
+              <label className="mb-1 block text-xs text-muted">{platform}</label>
+              <Input
+                name={`audience_${platform}`}
+                type="number"
+                min={0}
+                defaultValue={Number(audience[platform]) || ""}
+                placeholder="0"
+              />
+            </div>
+          ))}
+        </div>
+        <p className="mt-1.5 text-xs text-muted">Your total reach is the sum of these — shown on your public profile.</p>
       </div>
       {state.message && (
         <p className={`text-sm ${state.ok ? "text-brand" : "text-energy"}`}>{state.message}</p>

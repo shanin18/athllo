@@ -16,6 +16,8 @@ import { sportImageUrl } from "@/lib/sport-images";
 
 const SPORTS = ["Surfing", "Track & Field", "Basketball", "Climbing", "Football", "Cycling"];
 
+export const revalidate = 60;
+
 export default async function HomePage() {
   const [FEATURED, sportCounts] = await Promise.all([getFeaturedAthletes(3), getSportCounts()]);
 
@@ -170,10 +172,11 @@ export default async function HomePage() {
                     <Card className="overflow-hidden transition-shadow hover:shadow-lift">
                       <div className="relative h-44">
                         <Image
-                          src={sportImageUrl(a.sport)}
+                          src={a.coverUrl ?? sportImageUrl(a.sport)}
                           alt={a.sport}
                           fill
                           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                          style={a.coverUrl ? { objectPosition: a.coverPos } : undefined}
                           className="object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-panel/80 via-panel/10 to-transparent" />
@@ -307,7 +310,7 @@ export default async function HomePage() {
       {/* CTA */}
       <section className="container-x pb-24">
         <div className="relative overflow-hidden rounded-3xl bg-panel px-8 py-16 text-center text-white md:py-20">
-          <HeroMedia src={sportImageUrl("Cycling", 1600)} video="/videos/cycling.mp4" opacity={20} />
+          <HeroMedia src={sportImageUrl("Cycling", 1600)} opacity={20} />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-panel via-panel/80 to-panel/60" />
           <div className="relative">
             <h2 className="display mx-auto max-w-2xl text-4xl md:text-5xl">

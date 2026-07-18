@@ -8,17 +8,22 @@ export function HeroMedia({
   video,
   alt = "",
   opacity = 30,
+  animated = true,
+  objectPosition,
 }: {
   src: string;
   video?: string;
   alt?: string;
   opacity?: number;
+  animated?: boolean;
+  objectPosition?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(!video);
   const [inView, setInView] = useState(false);
 
   useEffect(() => {
+    if (!animated) return;
     function onScroll() {
       const el = ref.current;
       if (!el) return;
@@ -30,7 +35,7 @@ export function HeroMedia({
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [animated]);
 
   useEffect(() => {
     if (!video || !ref.current) return;
@@ -83,19 +88,23 @@ export function HeroMedia({
             fill
             priority
             sizes="100vw"
-            className="animate-ken-burns object-cover"
-            style={{ opacity: opacity / 100 }}
+            className={animated ? "animate-ken-burns object-cover" : "object-cover"}
+            style={{ opacity: opacity / 100, objectPosition }}
           />
         )}
       </div>
-      <div
-        aria-hidden
-        className="absolute -left-24 top-10 h-72 w-72 animate-blob-drift rounded-full bg-brand/30 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="absolute -right-16 bottom-0 h-80 w-80 animate-blob-drift rounded-full bg-energy/20 blur-3xl [animation-delay:3s]"
-      />
+      {animated && (
+        <>
+          <div
+            aria-hidden
+            className="absolute -left-24 top-10 h-72 w-72 animate-blob-drift rounded-full bg-brand/30 blur-3xl"
+          />
+          <div
+            aria-hidden
+            className="absolute -right-16 bottom-0 h-80 w-80 animate-blob-drift rounded-full bg-energy/20 blur-3xl [animation-delay:3s]"
+          />
+        </>
+      )}
     </>
   );
 }

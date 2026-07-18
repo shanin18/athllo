@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Check, PartyPopper } from "lucide-react";
+import { Check, Loader2, PartyPopper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { upgradePlan, downgradeToFree } from "@/lib/actions/billing";
@@ -28,16 +28,22 @@ const TIERS: {
   },
 ];
 
-export function BillingPlans({ currentTier }: { currentTier: PlanTier }) {
-  const [selected, setSelected] = useState<PlanTier>(currentTier);
+export function BillingPlans({ currentTier: initialTier }: { currentTier: PlanTier }) {
+  const [currentTier, setCurrentTier] = useState(initialTier);
+  const [pendingTier, setPendingTier] = useState<PlanTier | null>(null);
   const [pending, startTransition] = useTransition();
   const [successTier, setSuccessTier] = useState<PlanTier | null>(null);
 
-  function handleConfirm() {
+  function handleSelect(tier: PlanTier) {
+    if (tier === currentTier || pending) return;
+    setPendingTier(tier);
     startTransition(async () => {
-      const result =
-        selected === "free" ? await downgradeToFree() : await upgradePlan(selected);
-      if (result.ok) setSuccessTier(selected);
+      const result = tier === "free" ? await downgradeToFree() : await upgradePlan(tier);
+      setPendingTier(null);
+      if (result.ok) {
+        setCurrentTier(tier);
+        setSuccessTier(tier);
+      }
     });
   }
 
@@ -45,28 +51,32 @@ export function BillingPlans({ currentTier }: { currentTier: PlanTier }) {
     <>
       <div className="space-y-3">
         {TIERS.map((t) => (
-          <label
+          <button
             key={t.tier}
+            type="button"
+            onClick={() => handleSelect(t.tier)}
+            disabled={pending}
             className={cn(
-              "flex cursor-pointer items-start gap-4 rounded-xl border p-4 transition-colors",
-              selected === t.tier ? "border-brand bg-brand-wash/40" : "border-line hover:bg-brand-wash/10"
+              "flex w-full items-start gap-4 rounded-xl border p-4 text-left transition-colors disabled:cursor-default",
+              t.tier === currentTier
+                ? "border-brand bg-brand-wash/40"
+                : "border-line hover:bg-brand-wash/10"
             )}
           >
-            <input
-              type="radio"
-              name="plan"
-              className="mt-1 accent-brand"
-              checked={selected === t.tier}
-              onChange={() => setSelected(t.tier)}
-            />
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <span className="font-display font-bold">{t.name}</span>
                 <div className="flex items-center gap-2">
                   <span className="stat-num text-sm font-bold">{t.price}</span>
-                  {t.tier === currentTier && (
+                  {t.tier === currentTier ? (
                     <span className="rounded-full bg-brand-wash px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-brand">
                       Current
+                    </span>
+                  ) : pendingTier === t.tier ? (
+                    <Loader2 className="h-4 w-4 animate-spin text-brand" />
+                  ) : (
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-muted">
+                      Switch
                     </span>
                   )}
                 </div>
@@ -80,18 +90,9 @@ export function BillingPlans({ currentTier }: { currentTier: PlanTier }) {
                 ))}
               </ul>
             </div>
-          </label>
+          </button>
         ))}
       </div>
-
-      <Button
-        className="mt-5"
-        onClick={handleConfirm}
-        loading={pending}
-        disabled={selected === currentTier}
-      >
-        {selected === currentTier ? "Current plan" : `Switch to ${TIERS.find((t) => t.tier === selected)?.name}`}
-      </Button>
 
       {successTier && (
         <div

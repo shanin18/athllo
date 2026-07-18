@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LayoutGrid, User, Inbox, Handshake, Wallet, Search, Megaphone, LogOut, CreditCard } from "lucide-react";
+import { LayoutGrid, User, Inbox, Handshake, Wallet, Search, Megaphone, LogOut, CreditCard, ShieldCheck } from "lucide-react";
 import { getCurrentProfile } from "@/lib/supabase/server";
 import { signOut } from "@/lib/actions/auth";
 import { Avatar } from "@/components/ui/avatar";
@@ -22,8 +22,14 @@ const SPONSOR_NAV = [
   { href: "/sponsor", label: "Overview", icon: LayoutGrid },
   { href: "/sponsor/profile", label: "Company profile", icon: User },
   { href: "/sponsor/opportunities", label: "Opportunities", icon: Megaphone },
+  { href: "/sponsor/inquiries", label: "Inquiries", icon: Inbox },
   { href: "/sponsor/deals", label: "Deals", icon: Handshake },
   { href: "/billing", label: "Billing", icon: CreditCard },
+  { href: "/search", label: "Discover", icon: Search },
+];
+
+const ADMIN_NAV = [
+  { href: "/admin/verifications", label: "Verifications", icon: ShieldCheck },
   { href: "/search", label: "Discover", icon: Search },
 ];
 
@@ -36,7 +42,7 @@ export default async function DashboardLayout({
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
   const { user, role } = profile;
-  const NAV = role === "sponsor" ? SPONSOR_NAV : ATHLETE_NAV;
+  const NAV = role === "admin" ? ADMIN_NAV : role === "sponsor" ? SPONSOR_NAV : ATHLETE_NAV;
 
   return (
     <div className="grid min-h-dvh grid-cols-1 md:grid-cols-[240px_1fr]">

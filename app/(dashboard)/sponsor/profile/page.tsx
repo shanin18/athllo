@@ -13,7 +13,7 @@ export default async function SponsorProfileSettings() {
 
   const { data: profile } = await supabase
     .from("sponsor_profiles")
-    .select("company_name, description, website_url, budget_min, budget_max, logo_url, cover_url")
+    .select("company_name, description, website_url, budget_min, budget_max, logo_url, logo_pos, cover_url, cover_pos")
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -25,16 +25,20 @@ export default async function SponsorProfileSettings() {
         <ProfilePhotoUpload
           table="sponsor_profiles"
           column="cover_url"
+          posColumn="cover_pos"
           userId={user.id}
           initialUrl={profile?.cover_url ?? null}
+          initialPos={profile?.cover_pos}
           shape="banner"
         />
         <div className="-mt-10 px-6">
           <ProfilePhotoUpload
             table="sponsor_profiles"
             column="logo_url"
+            posColumn="logo_pos"
             userId={user.id}
             initialUrl={profile?.logo_url ?? null}
+            initialPos={profile?.logo_pos}
             shape="circle"
           />
         </div>
