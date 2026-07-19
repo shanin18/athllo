@@ -14,7 +14,7 @@ export default async function SponsorDashboard() {
   const supabase = await createClient();
 
   const [{ data: profile }, { count: savedCount }, { data: opportunities }] = await Promise.all([
-    supabase.from("sponsor_profiles").select("id, company_name").eq("user_id", user.id).maybeSingle(),
+    supabase.from("sponsor_profiles").select("id, company_name, logo_url").eq("user_id", user.id).maybeSingle(),
     supabase
       .from("saved_profiles")
       .select("id", { count: "exact", head: true })
@@ -39,7 +39,7 @@ export default async function SponsorDashboard() {
     <div className="px-6 py-8 md:px-10">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Avatar seed={user.email ?? user.id} size={48} />
+          <Avatar seed={user.email ?? user.id} src={profile?.logo_url} size={48} />
           <div>
             <h1 className="font-display text-2xl font-extrabold">
               {profile?.company_name ?? "Overview"}

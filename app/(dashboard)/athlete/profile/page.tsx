@@ -27,7 +27,7 @@ export default async function AthleteProfileSettings() {
         <VerificationBadge status={profile?.verification_status ?? "unverified"} />
       </div>
       <p className="mt-1 text-sm text-muted">This is what brands see when they view your profile.</p>
-      <Card className="mt-8 max-w-2xl overflow-hidden p-0">
+      <Card className="mt-8 max-w-4xl overflow-hidden p-0">
         <ProfilePhotoUpload
           table="athlete_profiles"
           column="cover_url"
@@ -36,6 +36,7 @@ export default async function AthleteProfileSettings() {
           initialUrl={profile?.cover_url ?? null}
           initialPos={profile?.cover_pos}
           shape="banner"
+          label="Cover photo"
         />
         <div className="-mt-10 px-6">
           <ProfilePhotoUpload
@@ -46,9 +47,11 @@ export default async function AthleteProfileSettings() {
             initialUrl={profile?.avatar_url ?? null}
             initialPos={profile?.avatar_pos}
             shape="circle"
+            label="Profile photo"
+            className="w-20"
           />
         </div>
-        <div className="p-6 pt-4">
+        <div className="max-w-2xl p-6 pt-4">
           <AthleteProfileForm profile={profile ?? null} />
         </div>
       </Card>

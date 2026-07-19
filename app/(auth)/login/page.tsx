@@ -8,6 +8,7 @@ import { signInSchema } from "@/lib/validation/schemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { GoogleButton } from "@/components/auth/google-button";
 
 const DEMO_CREDENTIALS = { email: "demo@athlex.test", password: "demo1234" };
 
@@ -70,7 +71,16 @@ function LoginForm() {
       <h1 className="font-display text-3xl font-extrabold">Welcome back</h1>
       <p className="mt-2 text-sm text-muted">Log in to your Athlex account.</p>
 
-      <form onSubmit={onSubmit} className="mt-7 space-y-4">
+      <div className="mt-7">
+        <GoogleButton />
+      </div>
+      <div className="my-5 flex items-center gap-3 text-xs text-muted">
+        <div className="h-px flex-1 bg-line" />
+        or
+        <div className="h-px flex-1 bg-line" />
+      </div>
+
+      <form onSubmit={onSubmit} className="space-y-4">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-ink-soft">Email</label>
           <Input

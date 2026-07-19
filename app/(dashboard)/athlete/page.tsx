@@ -18,7 +18,7 @@ export default async function AthleteDashboard() {
   const [{ data: profile }, { count: inquiryCount }, { data: deals }, { data: inquiries }] = await Promise.all([
     supabase
       .from("athlete_profiles")
-      .select("id, display_name, total_reach, verification_status")
+      .select("id, display_name, total_reach, verification_status, avatar_url")
       .eq("user_id", user.id)
       .maybeSingle(),
     supabase
@@ -53,7 +53,7 @@ export default async function AthleteDashboard() {
     <div className="px-6 py-8 md:px-10">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Avatar seed={user.email ?? user.id} size={48} />
+          <Avatar seed={user.email ?? user.id} src={profile?.avatar_url} size={48} />
           <div>
             <div className="flex items-center gap-2">
               <h1 className="font-display text-2xl font-extrabold">

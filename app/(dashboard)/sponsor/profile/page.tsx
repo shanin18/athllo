@@ -21,7 +21,7 @@ export default async function SponsorProfileSettings() {
     <div className="px-6 py-8 md:px-10">
       <h1 className="font-display text-2xl font-extrabold">Company profile</h1>
       <p className="mt-1 text-sm text-muted">This is what athletes see when you send an inquiry.</p>
-      <Card className="mt-8 max-w-2xl overflow-hidden p-0">
+      <Card className="mt-8 max-w-4xl overflow-hidden p-0">
         <ProfilePhotoUpload
           table="sponsor_profiles"
           column="cover_url"
@@ -30,6 +30,7 @@ export default async function SponsorProfileSettings() {
           initialUrl={profile?.cover_url ?? null}
           initialPos={profile?.cover_pos}
           shape="banner"
+          label="Cover photo"
         />
         <div className="-mt-10 px-6">
           <ProfilePhotoUpload
@@ -40,9 +41,11 @@ export default async function SponsorProfileSettings() {
             initialUrl={profile?.logo_url ?? null}
             initialPos={profile?.logo_pos}
             shape="circle"
+            label="Company logo"
+            className="w-20"
           />
         </div>
-        <div className="p-6 pt-4">
+        <div className="max-w-2xl p-6 pt-4">
           <SponsorProfileForm profile={profile ?? null} />
         </div>
       </Card>

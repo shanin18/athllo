@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LayoutGrid, User, Inbox, Handshake, Wallet, Search, Megaphone, LogOut, CreditCard, ShieldCheck } from "lucide-react";
-import { getCurrentProfile } from "@/lib/supabase/server";
+import { createClient, getCurrentProfile } from "@/lib/supabase/server";
 import { signOut } from "@/lib/actions/auth";
 import { Avatar } from "@/components/ui/avatar";
 import { DashboardNavLink } from "@/components/dashboard/nav-link";
@@ -44,6 +44,16 @@ export default async function DashboardLayout({
   const { user, role } = profile;
   const NAV = role === "admin" ? ADMIN_NAV : role === "sponsor" ? SPONSOR_NAV : ATHLETE_NAV;
 
+  const supabase = await createClient();
+  let avatarUrl: string | null = null;
+  if (role === "sponsor") {
+    const { data } = await supabase.from("sponsor_profiles").select("logo_url").eq("user_id", user.id).maybeSingle();
+    avatarUrl = data?.logo_url ?? null;
+  } else if (role === "athlete") {
+    const { data } = await supabase.from("athlete_profiles").select("avatar_url").eq("user_id", user.id).maybeSingle();
+    avatarUrl = data?.avatar_url ?? null;
+  }
+
   return (
     <div className="grid min-h-dvh grid-cols-1 md:grid-cols-[240px_1fr]">
       <MobileSidebar
@@ -52,7 +62,7 @@ export default async function DashboardLayout({
         role={role}
       />
 
-      <aside className="hidden border-r border-line bg-surface md:flex md:flex-col">
+      <aside className="hidden border-r border-line bg-surface md:sticky md:top-0 md:flex md:h-dvh md:flex-col">
         <Link href="/" className="flex h-16 items-center gap-2 border-b border-line px-6">
           <span className="grid h-7 w-7 place-items-center rounded-md bg-panel text-white font-display font-extrabold text-sm">
             A
@@ -67,7 +77,7 @@ export default async function DashboardLayout({
           ))}
         </nav>
         <div className="flex items-center gap-3 border-t border-line p-4">
-          <Avatar seed={user.email ?? user.id} size={32} />
+          <Avatar seed={user.email ?? user.id} src={avatarUrl} size={32} />
           <div className="min-w-0 flex-1">
             <div className="truncate text-xs font-medium text-ink-soft">{user.email}</div>
             <div className="text-[11px] capitalize text-muted">{role}</div>
